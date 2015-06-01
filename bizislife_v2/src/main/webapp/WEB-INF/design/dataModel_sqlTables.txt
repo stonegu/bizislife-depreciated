@@ -1,0 +1,120 @@
+#######################################################
+# all tables here follow dataModel.uxf design!!
+#######################################################
+
+DROP DATABASE bizislife;
+CREATE DATABASE bizislife CHARACTER SET utf8;
+USE bizislife;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS organization (
+id BIGINT NOT NULL AUTO_INCREMENT,
+uid VARCHAR(255) NOT NULL,
+oname VARCHAR(255),
+PRIMARY KEY (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS account (
+id BIGINT NOT NULL AUTO_INCREMENT,
+uid VARCHAR(255) NOT NULL,
+aname VARCHAR(255),
+pwd VARCHAR(50),
+PRIMARY KEY (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS organization_account (
+oid BIGINT NOT NULL,
+aid BIGINT NOT NULL,
+PRIMARY KEY (oid, aid),
+CONSTRAINT fk_oa_organization FOREIGN KEY (oid) REFERENCES organization (id),
+CONSTRAINT fk_oa_account FOREIGN KEY (aid) REFERENCES account (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS agroup (
+id BIGINT NOT NULL AUTO_INCREMENT,
+uid VARCHAR(255) NOT NULL,
+gname VARCHAR(255),
+description TEXT,
+PRIMARY KEY (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS account_group (
+aid BIGINT NOT NULL,
+gid BIGINT NOT NULL,
+PRIMARY KEY (aid, gid),
+CONSTRAINT fk_ag_account FOREIGN KEY (aid) REFERENCES account (id),
+CONSTRAINT fk_ag_group FOREIGN KEY (gid) REFERENCES agroup (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS role (
+id BIGINT NOT NULL AUTO_INCREMENT,
+uid VARCHAR(255) NOT NULL,
+rname VARCHAR(255),
+description TEXT,
+PRIMARY KEY (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS role_account (
+rid BIGINT NOT NULL,
+aid BIGINT NOT NULL,
+PRIMARY KEY (rid, aid),
+CONSTRAINT fk_ra_role FOREIGN KEY (rid) REFERENCES role (id),
+CONSTRAINT fk_ra_account FOREIGN KEY (aid) REFERENCES account (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS role_group (
+rid BIGINT NOT NULL,
+gid BIGINT NOT NULL,
+PRIMARY KEY (rid, gid),
+CONSTRAINT fk_rg_role FOREIGN KEY (rid) REFERENCES role (id),
+CONSTRAINT fk_rg_account FOREIGN KEY (gid) REFERENCES agroup (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS contactlocation (
+id BIGINT NOT NULL AUTO_INCREMENT,
+uid VARCHAR(255) NOT NULL,
+street VARCHAR(255),
+city VARCHAR(100),
+province VARCHAR(50),
+postalcode VARCHAR(20),
+country VARCHAR(20),
+latitude FLOAT( 10, 6 ),
+longitude FLOAT( 10, 6 ),
+orgid BIGINT,
+accountid BIGINT,
+INDEX fk_oc_orgnization (orgid),
+INDEX fk_ac_account (accountid),
+CONSTRAINT fk_oc_orgnization FOREIGN KEY (orgid) REFERENCES organization (id),
+CONSTRAINT fk_ac_account FOREIGN KEY (accountid) REFERENCES account (id),
+PRIMARY KEY (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#######################################################
+
+CREATE TABLE IF NOT EXISTS econtact (
+id BIGINT NOT NULL AUTO_INCREMENT,
+uid VARCHAR(255) NOT NULL,
+contacttype VARCHAR(30),
+contactvalue VARCHAR(255),
+contactlocationid BIGINT,
+INDEX fk_ce_contactlocation (contactlocationid),
+CONSTRAINT fk_ce_contactlocation FOREIGN KEY (contactlocationid) REFERENCES contactlocation (id),
+PRIMARY KEY (id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
