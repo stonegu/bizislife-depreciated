@@ -28,8 +28,8 @@ public class EContact extends UIDPojo{
 		return null;
 	}
 
-	public void setContactType(String contactType) {
-		this.contactType = contactType;
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType.code;
 	}
 
 	public String getContactValue() {
@@ -38,6 +38,14 @@ public class EContact extends UIDPojo{
 
 	public void setContactValue(String contactValue) {
 		this.contactValue = contactValue;
+	}
+
+	public ContactLocation getContactLocation() {
+		return contactLocation;
+	}
+
+	public void setContactLocation(ContactLocation contactLocation) {
+		this.contactLocation = contactLocation;
 	}
 
 	@Override
