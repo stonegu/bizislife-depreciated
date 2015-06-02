@@ -25,7 +25,7 @@ public class Account extends UIDPojo{
 	private Collection<Organization> organizations;
 
 	@ManyToMany(mappedBy="accounts", cascade=CascadeType.ALL)
-	private Collection<AGroup> groups;
+	private Collection<Group> groups;
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name="role_account", joinColumns=@JoinColumn(name="aid"), inverseJoinColumns=@JoinColumn(name="rid"))
@@ -67,17 +67,17 @@ public class Account extends UIDPojo{
 		}
 	}
 
-	public Collection<AGroup> getGroups() {
+	public Collection<Group> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(Collection<AGroup> groups) {
+	public void setGroups(Collection<Group> groups) {
 		this.groups = groups;
 	}
 	
-	public void addGroup(AGroup group) {
+	public void addGroup(Group group) {
 		if (group!=null) {
-			if (this.groups==null) this.groups = new HashSet<AGroup>();
+			if (this.groups==null) this.groups = new HashSet<Group>();
 			this.groups.add(group);
 		}
 	}
@@ -145,7 +145,7 @@ public class Account extends UIDPojo{
 
 	@Override
 	public String toString() {
-		return "Account [aname=" + name + ", pwd=" + pwd + ", organizations="
+		return "Account [name=" + name + ", pwd=" + pwd + ", organizations="
 				+ organizations + ", groups=" + groups + ", roles=" + roles
 				+ ", contactLocations=" + contactLocations + "]";
 	}

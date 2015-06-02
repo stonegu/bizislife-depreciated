@@ -13,10 +13,10 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="agroup")
-public class AGroup extends UIDPojo{
+public class Group extends UIDPojo{
 
 	@Column(name="gname")
-	private String gname;
+	private String name;
 	
 	@Column(name="description")
 	private String description;
@@ -29,12 +29,12 @@ public class AGroup extends UIDPojo{
 	@JoinTable(name="role_group", joinColumns=@JoinColumn(name="gid"), inverseJoinColumns=@JoinColumn(name="rid"))
 	private Collection<Role> roles;
 
-	public String getGname() {
-		return gname;
+	public String getName() {
+		return name;
 	}
 
-	public void setGname(String gname) {
-		this.gname = gname;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDescription() {
@@ -81,7 +81,7 @@ public class AGroup extends UIDPojo{
 		int result = 1;
 		result = prime * result
 				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((gname == null) ? 0 : gname.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -93,23 +93,23 @@ public class AGroup extends UIDPojo{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AGroup other = (AGroup) obj;
+		Group other = (Group) obj;
 		if (description == null) {
 			if (other.description != null)
 				return false;
 		} else if (!description.equals(other.description))
 			return false;
-		if (gname == null) {
-			if (other.gname != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!gname.equals(other.gname))
+		} else if (!name.equals(other.name))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "AGroup [gname=" + gname + ", description=" + description
+		return "Group [name=" + name + ", description=" + description
 				+ ", accounts=" + accounts + ", roles=" + roles + "]";
 	}
 

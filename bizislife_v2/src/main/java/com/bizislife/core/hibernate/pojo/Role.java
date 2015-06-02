@@ -9,17 +9,17 @@ import javax.persistence.Table;
 public class Role extends UIDPojo{
 
 	@Column(name="rname")
-	private String rname;
+	private String name;
 	
 	@Column(name="description")
 	private String description;
 
-	public String getRname() {
-		return rname;
+	public String getName() {
+		return name;
 	}
 
-	public void setRname(String rname) {
-		this.rname = rname;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDescription() {
@@ -36,7 +36,7 @@ public class Role extends UIDPojo{
 		int result = super.hashCode();
 		result = prime * result
 				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((rname == null) ? 0 : rname.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -54,17 +54,17 @@ public class Role extends UIDPojo{
 				return false;
 		} else if (!description.equals(other.description))
 			return false;
-		if (rname == null) {
-			if (other.rname != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!rname.equals(other.rname))
+		} else if (!name.equals(other.name))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Role [rname=" + rname + ", description=" + description + "]";
+		return "Role [name=" + name + ", description=" + description + "]";
 	}
 	
 }

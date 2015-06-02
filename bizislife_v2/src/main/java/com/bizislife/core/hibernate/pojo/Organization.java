@@ -17,7 +17,7 @@ import javax.persistence.Table;
 public class Organization extends UIDPojo{
 	
 	@Column(name="oname")
-	private String oname;
+	private String name;
 	
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name="organization_account", joinColumns=@JoinColumn(name="oid"), inverseJoinColumns=@JoinColumn(name="aid"))
@@ -26,12 +26,12 @@ public class Organization extends UIDPojo{
 	@OneToMany(mappedBy="organization", cascade=CascadeType.ALL)
 	private Collection<ContactLocation> contactLocations;
 	
-	public String getOname() {
-		return oname;
+	public String getName() {
+		return name;
 	}
 
-	public void setOname(String oname) {
-		this.oname = oname;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Collection<Account> getAccounts() {
@@ -68,7 +68,7 @@ public class Organization extends UIDPojo{
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((oname == null) ? 0 : oname.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -81,17 +81,17 @@ public class Organization extends UIDPojo{
 		if (getClass() != obj.getClass())
 			return false;
 		Organization other = (Organization) obj;
-		if (oname == null) {
-			if (other.oname != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!oname.equals(other.oname))
+		} else if (!name.equals(other.name))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Organization [oname=" + oname + ", accounts=" + accounts
+		return "Organization [name=" + name + ", accounts=" + accounts
 				+ ", contactLocations=" + contactLocations + "]";
 	}
 
