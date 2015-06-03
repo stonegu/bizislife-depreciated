@@ -10,11 +10,12 @@
 	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 	
 	<http auto-config="true" use-expressions="true" entry-point-ref="http403EntryPoint">
-<!-- 	
-		<intercept-url pattern="/fakeget**" access="hasAnyRole('ROLE_AAA, ROLE_BBB')" />
-		<intercept-url pattern="/fakeget" access="hasAnyRole('ROLE_ANONYMOUS, ROLE_NORMAL')" />
+
+		<intercept-url pattern="/fakegeet**" access="hasAnyRole('ROLE_AAA, ROLE_BBB')" />
+		<intercept-url pattern="/fakegeet" access="hasAnyRole('ROLE_ANONYMOUS, ROLE_NORMAL')" />
 		<intercept-url pattern="/fakedel/**" access="hasRole('ROLE_ADMIN')" />
- -->
+
+
 <!-- 		
         <custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="motechFilterSecurityInterceptor" />
  -->        

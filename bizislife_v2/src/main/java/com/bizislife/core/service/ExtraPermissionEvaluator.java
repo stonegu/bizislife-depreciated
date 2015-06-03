@@ -32,7 +32,7 @@ public class ExtraPermissionEvaluator implements PermissionEvaluator{
 	public boolean hasPermission(Authentication authentication,
 			Serializable targetId, String targetType, Object permission) {
 		// TODO Auto-generated method stub
-		return false;
+		throw new RuntimeException("Id and Class permissions are not supported by this application");
 	}
 
 }

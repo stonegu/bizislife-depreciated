@@ -5,7 +5,9 @@ import org.springframework.security.core.userdetails.User;
 
 public interface FakeService {
 	
-	@PreAuthorize("hasPermission(#storyId, 'isDirector')")
+//	@PreAuthorize("hasPermission(#storyId, 'isDirector')")
+	
+	@PreAuthorize("hasPermission(#userName, 'employee', 'isOwner')")
 	public User getFakeUser(String userName);
 	
 	public boolean delFakeUser(String userName);
