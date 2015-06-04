@@ -12,11 +12,16 @@ import com.bizislife.util.annotation.PublicPage;
 public class HomeController {
 	
 	
+    @RequestMapping(value="/test", method=RequestMethod.GET)
+    public String test(
+            ModelMap model) {
+        return "test";
+    }
+	
     @RequestMapping(value="/", method=RequestMethod.GET)
-    public String display(
+    public String root(
             ModelMap model) {
         return "home";
     }
-	
 
 }
