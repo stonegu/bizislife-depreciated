@@ -3,8 +3,8 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html ng-app="bizApp">
 
 <head>
 
@@ -20,6 +20,8 @@
 
     <!-- Custom CSS -->
     <link href="/css/agency.css" rel="stylesheet" type="text/css" />
+    
+    <link href="/css/bizGlobalStyle.css" rel="stylesheet" type="text/css" />
 
     <!-- Custom Fonts -->
     <link href="/brand/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
@@ -71,6 +73,9 @@
                     </li>
                     <li>
                         <a class="page-scroll" href="#contact">Contact</a>
+                    </li>
+                    <li>
+	                    <a href="#sign" data-toggle="modal">Login</a>
                     </li>
                 </ul>
             </div>
@@ -641,9 +646,135 @@
             </div>
         </div>
     </div>
+    
+    
+    <!-- sign Modal -->
+    <div class="portfolio-modal modal fade" id="sign" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <!-- Project Details Go Here -->
+                            
+                            
+							<div role="tabpanel">
+							
+								<!-- Nav tabs -->
+								<ul class="nav nav-tabs" role="tablist">
+									<li role="presentation" class="active"><a href="#sign_login" aria-controls="home" role="tab" data-toggle="tab">Login</a></li>
+									<li role="presentation"><a href="#sign_signup" aria-controls="profile" role="tab" data-toggle="tab">Sign Up</a></li>
+									<li role="presentation"><a href="#sign_forgetpwd" aria-controls="messages" role="tab" data-toggle="tab">Forget Password?</a></li>
+								</ul>
+								
+								<!-- Tab panes -->
+								<div class="tab-content">
+									<div role="tabpanel" class="tab-pane fade in active" id="sign_login">
+					                    <form name="loginform" id="loginform" novalidate>
+					                        <div class="row">
+					                            <div class="col-md-12">
+					                            
+													<h3 class="form-title">Login to your account</h3>
+					                            
+					                                <div class="form-group">
+					                                    <input type="text" class="form-control" placeholder="User Name" id="username_login" required data-validation-required-message="Please enter your username.">
+					                                    <p class="help-block text-danger"></p>
+					                                </div>
+					                                <div class="form-group">
+					                                    <input type="password" class="form-control" placeholder="Password" id="password_login" required data-validation-required-message="Please enter your password.">
+					                                    <p class="help-block text-danger"></p>
+					                                </div>
+					                                <div class="form-group">
+					                                	<input type="checkbox" id="rememberme_login" /> Remember me
+					                                </div>
+					                            </div>
+					                            <div class="clearfix"></div>
+					                            <div class="col-lg-12 text-center">
+					                                <div id="success"></div>
+					                                <button type="submit" class="btn btn-xl">Login</button>
+					                            </div>
+					                        </div>
+					                    </form>
+									
+									</div>
+									<div role="tabpanel" class="tab-pane fade" id="sign_signup" ng-controller="signupController">
+					                    <form name="signup_form" id="signup_form" ng-fab-form-options="customFormOptions">
+					                        <div class="row">
+					                            <div class="col-md-12">
+					                            
+													<h3 class="form-title">Create your personal account {{abc}}</h3>
+					                            
+					                                <div class="form-group">
+					                                    <input type="text" class="form-control" ng-model="signupform.username" placeholder="User Name" id="username_signup" required>
+					                                </div>
+					                                <div class="form-group">
+					                                    <input type="email" class="form-control" ng-model="signupform.email" placeholder="Email Address" id="email_signup" required>
+					                                </div>
+					                                <div class="form-group">
+					                                    <input type="password" class="form-control" ng-model="signupform.pwd" placeholder="Password" id="password_signup" required ng-minlength="10">
+					                                </div>
+					                                <div class="form-group">
+					                                    <input type="password" class="form-control" ng-model="signupform.confirmpwd" placeholder="Confirm Password" id="confirmpassword_signup" required ng-fab-match="signupform.pwd">
+					                                </div>
+					                            </div>
+					                            <div class="clearfix"></div>
+					                            <div class="col-lg-12 text-center">
+					                                <div id="success"></div>
+					                                <button type="submit" class="btn btn-xl" ng-click="signup(signupform)">Create an account</button>
+					                            </div>
+					                        </div>
+					                    </form>
+										
+									</div>
+									<div role="tabpanel" class="tab-pane fade" id="sign_forgetpwd">
+					                    <form name="forgetpwdform" id="forgetpwdform" novalidate>
+					                        <div class="row">
+					                            <div class="col-md-12">
+					                            
+													<h3 >Forget Password ?</h3>
+													<p>Enter your e-mail address below to reset your password.</p>
+					                            
+					                                <div class="form-group">
+					                                    <input type="email" class="form-control" placeholder="Your Email *" id="email_forgetpwd" required data-validation-required-message="Please enter your email address.">
+					                                    <p class="help-block text-danger"></p>
+					                                </div>
+
+					                            </div>
+					                            <div class="clearfix"></div>
+					                            <div class="col-lg-12 text-center">
+					                                <div id="success"></div>
+					                                <button type="submit" class="btn btn-xl">Submit</button>
+					                            </div>
+					                        </div>
+					                    </form>
+									</div>
+								</div>
+							
+							</div>                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 
     <!-- jQuery -->
     <script src="/brand/jQuery/jquery.min.js"></script>
+    
+    <!-- Angular -->
+	<script src="/brand/angularJs/angular.min.js"></script>
+	<script src="/brand/angularJs/angular-messages.min.js"></script>
+	<script src="/brand/angularJs/angular-animate.min.js"></script>
+	<script src="/brand/angularUI/UI-Router/angular-ui-router.min.js"></script>
+	<script src="/brand/angularUI/utils/ui-utils.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="/brand/bootstrap/js/bootstrap.min.js"></script>
@@ -653,13 +784,22 @@
     <script src="/brand/others/classie.js"></script>
     <script src="/brand/others/cbpAnimatedHeader.js"></script>
 
+	<!-- form validation -->
+	<script src="/brand/ng-fab-form/ng-fab-form.min.js"></script>
+
     <!-- Contact Form JavaScript -->
+<!--     
     <script src="/brand/others/jqBootstrapValidation.js"></script>
+ -->    
+    
+<!--     
     <script src="/js/contact_me.js"></script>
-
+ -->    
     <!-- Custom Theme JavaScript -->
-    <script src="/brand/others/agency.js"></script>
-
+<!--     
+    <script src="/js/agency.js"></script>
+ -->
+ 	<script src="/bizislife.js"></script>
 </body>
 
 </html>

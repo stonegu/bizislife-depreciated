@@ -24,14 +24,16 @@
       <x>490</x>
       <y>320</y>
       <w>210</w>
-      <h>110</h>
+      <h>140</h>
     </coordinates>
     <panel_attributes>Account
 --
 -id: Long
 -uid: String
--aname: String
+-loginname: String
 -pwd: String
+-firstname: String
+-lastname: String
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -39,15 +41,15 @@
     <id>Relation</id>
     <coordinates>
       <x>560</x>
-      <y>420</y>
+      <y>450</y>
       <w>50</w>
-      <h>120</h>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=0..n
 m2=0..n
 </panel_attributes>
-    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>

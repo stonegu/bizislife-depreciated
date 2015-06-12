@@ -15,11 +15,17 @@ import javax.persistence.Table;
 @Entity
 @Table(name="account")
 public class Account extends UIDPojo{
-	@Column(name="aname")
-	private String name;
+	@Column(name="loginname")
+	private String loginname;
 	
 	@Column(name="pwd")
 	private String pwd;
+	
+	@Column(name="firstname")
+	private String firstname;
+	
+	@Column(name="lastname")
+	private String lastname;
 	
 	@ManyToMany(mappedBy="accounts", cascade=CascadeType.ALL)
 	private Collection<Organization> organizations;
@@ -34,12 +40,12 @@ public class Account extends UIDPojo{
 	@OneToMany(mappedBy="account", cascade=CascadeType.ALL)
 	private Collection<ContactLocation> contactLocations;
 	
-	public String getName() {
-		return name;
+	public String getLoginname() {
+		return loginname;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLoginname(String loginname) {
+		this.loginname = loginname;
 	}
 
 	public String getPwd() {
@@ -48,6 +54,22 @@ public class Account extends UIDPojo{
 
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
 	}
 
 	public Collection<Organization> getOrganizations() {
@@ -116,7 +138,12 @@ public class Account extends UIDPojo{
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result
+				+ ((firstname == null) ? 0 : firstname.hashCode());
+		result = prime * result
+				+ ((lastname == null) ? 0 : lastname.hashCode());
+		result = prime * result
+				+ ((loginname == null) ? 0 : loginname.hashCode());
 		result = prime * result + ((pwd == null) ? 0 : pwd.hashCode());
 		return result;
 	}
@@ -130,10 +157,20 @@ public class Account extends UIDPojo{
 		if (getClass() != obj.getClass())
 			return false;
 		Account other = (Account) obj;
-		if (name == null) {
-			if (other.name != null)
+		if (firstname == null) {
+			if (other.firstname != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!firstname.equals(other.firstname))
+			return false;
+		if (lastname == null) {
+			if (other.lastname != null)
+				return false;
+		} else if (!lastname.equals(other.lastname))
+			return false;
+		if (loginname == null) {
+			if (other.loginname != null)
+				return false;
+		} else if (!loginname.equals(other.loginname))
 			return false;
 		if (pwd == null) {
 			if (other.pwd != null)
@@ -145,9 +182,11 @@ public class Account extends UIDPojo{
 
 	@Override
 	public String toString() {
-		return "Account [name=" + name + ", pwd=" + pwd + ", organizations="
-				+ organizations + ", groups=" + groups + ", roles=" + roles
-				+ ", contactLocations=" + contactLocations + "]";
+		return "Account [loginname=" + loginname + ", pwd=" + pwd
+				+ ", firstname=" + firstname + ", lastname=" + lastname
+				+ ", organizations=" + organizations + ", groups=" + groups
+				+ ", roles=" + roles + ", contactLocations=" + contactLocations
+				+ "]";
 	}
 
 }

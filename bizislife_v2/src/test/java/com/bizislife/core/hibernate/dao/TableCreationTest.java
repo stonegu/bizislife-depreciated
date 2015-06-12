@@ -63,17 +63,17 @@ public class TableCreationTest {
 		
 		// create 3 account
 		Account account1 = new Account();
-		account1.setName("account1");
+		account1.setLoginname("account1");
 		account1.setPwd("pwd1");
 		account1.setUid(UUID.randomUUID().toString());
 		
 		Account account2 = new Account();
-		account2.setName("account2");
+		account2.setLoginname("account2");
 		account2.setPwd("pwd2");
 		account2.setUid(UUID.randomUUID().toString());
 		
 		Account account3 = new Account();
-		account3.setName("account3");
+		account3.setLoginname("account3");
 		account3.setPwd("pwd3");
 		account3.setUid(UUID.randomUUID().toString());
 		
@@ -237,11 +237,11 @@ public class TableCreationTest {
 		
 		for (Account account : savedAccounts) {
 			assertNotNull(account.getOrganizations());
-			if(account.getName().equals("account1")) {
+			if(account.getLoginname().equals("account1")) {
 				assertThat(1, is(account.getOrganizations().size()));
-			} else if(account.getName().equals("account2")) {
+			} else if(account.getLoginname().equals("account2")) {
 				assertThat(1, is(account.getOrganizations().size()));
-			} else if(account.getName().equals("account3")) {
+			} else if(account.getLoginname().equals("account3")) {
 				assertThat(1, is(account.getOrganizations().size()));
 			}
 		}
@@ -270,11 +270,11 @@ public class TableCreationTest {
 		
 		for (Account account : savedAccounts) {
 			assertNotNull(account.getRoles());
-			if (account.getName().equals("account1")) {
+			if (account.getLoginname().equals("account1")) {
 				assertThat(1, is(account.getRoles().size()));
-			} else if (account.getName().equals("account2")) {
+			} else if (account.getLoginname().equals("account2")) {
 				assertThat(2, is(account.getRoles().size()));
-			} else if (account.getName().equals("account3")) {
+			} else if (account.getLoginname().equals("account3")) {
 				assertThat(3, is(account.getRoles().size()));
 			}
 		}
@@ -324,7 +324,7 @@ public class TableCreationTest {
 		assertNotNull(savedAccounts);
 		
 		for (Account account : savedAccounts) {
-			if (account.getName().equals("account2")) {
+			if (account.getLoginname().equals("account2")) {
 				assertNotNull(account.getContactLocations());
 				assertThat(2, is(account.getContactLocations().size()));
 				
@@ -336,7 +336,7 @@ public class TableCreationTest {
 					assertNotNull(contactLocation.getAddress().getPostalCode());
 					assertNotNull(contactLocation.getGpsLocation());
 					assertNotNull(contactLocation.getGpsLocation().getLatitude());
-					assertThat("account2", is(contactLocation.getAccount().getName()));
+					assertThat("account2", is(contactLocation.getAccount().getLoginname()));
 					assertNull(contactLocation.getOrganization());
 				}
 			} else {
