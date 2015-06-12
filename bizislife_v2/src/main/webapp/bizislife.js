@@ -1,4 +1,4 @@
-/*! StoneGu - v1.0.0 - 2015-06-11
+/*! StoneGu - v1.0.0 - 2015-06-12
 * Copyright (c) 2015 ; Licensed  */
 /*!
  * Start Bootstrap - Agency Bootstrap Theme (http://startbootstrap.com)
@@ -36,12 +36,22 @@ $('.navbar-collapse ul li a').click(function() {
         });		
 	}])
 })();
-
-
 ;'use strict';
 
 (function () {
 	var bizAppService = angular.module('bizAppService', []);
+	
+	bizAppService.factory('signupFactory', ['$http', function($http) {
+		return {
+			signup: function(signupform) {
+				return $http({
+                    url: 'sign/signup',
+                    method: 'POST',
+                    data: signupform
+				})
+			}
+		}
+	}]);
 	
 })();
 
@@ -49,9 +59,9 @@ $('.navbar-collapse ul li a').click(function() {
 ;'use strict';
 
 (function () {
-	var signupControllerModle = angular.module('signupControllerModle', []);
+	var signupControllerModle = angular.module('signupControllerModle', ['bizAppService']);
 	
-	signupControllerModle.controller('signupController', ['$scope', 'ngFabForm', function($scope, ngFabForm) {
+	signupControllerModle.controller('signupController', ['$scope', 'ngFabForm', 'signupFactory', function($scope, ngFabForm, signupFactory) {
 		$scope.signupform = {};
 		
         $scope.defaultFormOptions = ngFabForm.config;
@@ -59,6 +69,13 @@ $('.navbar-collapse ul li a').click(function() {
 		
 		$scope.signup = function() {
 			console.log(JSON.stringify($scope.signupform));
+			
+			signupFactory.signup($scope.signupform).then(function(response) {
+				console.log('response: ' + JSON.stringify(response.data));
+			}, function(error) {
+				console.log(error);
+			});
+			
 		}
 		
 	}]);

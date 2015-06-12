@@ -704,7 +704,7 @@
 									
 									</div>
 									<div role="tabpanel" class="tab-pane fade" id="sign_signup" ng-controller="signupController">
-					                    <form name="signup_form" id="signup_form" ng-fab-form-options="customFormOptions">
+					                    <form name="signup_form" id="signup_form" ng-fab-form-options="customFormOptions" ng-submit="signup(signupform)">
 					                        <div class="row">
 					                            <div class="col-md-12">
 					                            
@@ -726,7 +726,7 @@
 					                            <div class="clearfix"></div>
 					                            <div class="col-lg-12 text-center">
 					                                <div id="success"></div>
-					                                <button type="submit" class="btn btn-xl" ng-click="signup(signupform)">Create an account</button>
+					                                <button type="submit" class="btn btn-xl">Create an account</button>
 					                            </div>
 					                        </div>
 					                    </form>
