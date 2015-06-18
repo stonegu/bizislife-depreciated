@@ -24,6 +24,7 @@ loginname VARCHAR(255),
 pwd VARCHAR(50),
 firstname VARCHAR(100),
 lastname VARCHAR(100),
+preferlocale CHAR(3),
 PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 

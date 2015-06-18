@@ -2,11 +2,14 @@ package com.bizislife.core.controller.component;
 
 import java.io.Serializable;
 
+import com.bizislife.util.annotation.ValidEmail;
+
 public class SignupForm implements Serializable{
 	
 	private static final long serialVersionUID = 3621755407542333513L;
 	
 	private String username;
+	@ValidEmail
 	private String email;
 	private String pwd;
 	private String confirmpwd;

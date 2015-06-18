@@ -22,9 +22,9 @@
     <id>UMLClass</id>
     <coordinates>
       <x>490</x>
-      <y>320</y>
+      <y>300</y>
       <w>210</w>
-      <h>140</h>
+      <h>160</h>
     </coordinates>
     <panel_attributes>Account
 --
@@ -34,6 +34,7 @@
 -pwd: String
 -firstname: String
 -lastname: String
+-preferlocale: String
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -115,13 +116,13 @@ m2=0..n</panel_attributes>
       <x>570</x>
       <y>210</y>
       <w>50</w>
-      <h>130</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=0..n
 m2=0..n
 </panel_attributes>
-    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>

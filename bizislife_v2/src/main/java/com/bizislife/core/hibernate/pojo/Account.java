@@ -2,6 +2,7 @@ package com.bizislife.core.hibernate.pojo;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,6 +27,9 @@ public class Account extends UIDPojo{
 	
 	@Column(name="lastname")
 	private String lastname;
+	
+	@Column(name="preferlocale")
+	private String preferlocale;
 	
 	@ManyToMany(mappedBy="accounts", cascade=CascadeType.ALL)
 	private Collection<Organization> organizations;
@@ -70,6 +74,18 @@ public class Account extends UIDPojo{
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+	}
+
+	public Locale getPreferlocale() {
+		Locale locale = null;
+		if (this.preferlocale!=null) {
+			locale = new Locale(this.preferlocale);
+		}
+		return locale;
+	}
+
+	public void setPreferlocale(String preferlocale) {
+		this.preferlocale = preferlocale;
 	}
 
 	public Collection<Organization> getOrganizations() {
