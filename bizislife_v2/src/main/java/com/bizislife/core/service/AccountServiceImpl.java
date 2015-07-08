@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bizislife.core.hibernate.dao.AccountJpaRepository;
+import com.bizislife.core.hibernate.dao.EContactJpaRepository;
 import com.bizislife.core.hibernate.pojo.Account;
 import com.bizislife.core.hibernate.pojo.EContact.ContactType;
 
@@ -16,6 +17,9 @@ public class AccountServiceImpl implements AccountService{
 	
 	@Autowired
 	AccountJpaRepository accountJpaRepository;
+	
+	@Autowired
+	EContactJpaRepository eContactJpaRepository;
 
 	@Transactional(readOnly=true)
 	public User getLoginAccount() {
@@ -27,6 +31,12 @@ public class AccountServiceImpl implements AccountService{
 	public void removeEContact(String accountUid, ContactType contactType, String contactValue) {
 		if (accountUid!=null && contactType!=null && contactValue!=null) {
 			List<Account> accounts = accountJpaRepository.findByUid(accountUid);
+			if (accounts!=null && accounts.size()>0) {
+				Account account = accounts.get(0);
+				Long delId = account.removeEContact(contactType, contactValue);
+				accountJpaRepository.save(account);
+				eContactJpaRepository.delete(delId);
+			}
 		}
 	}
 

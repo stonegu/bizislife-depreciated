@@ -2,6 +2,7 @@ package com.bizislife.core.hibernate.pojo;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,6 +29,10 @@ public class Group extends UIDPojo{
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name="role_group", joinColumns=@JoinColumn(name="gid"), inverseJoinColumns=@JoinColumn(name="rid"))
 	private Collection<Role> roles;
+
+	public Group() {
+		this.uid = UUID.randomUUID().toString();
+	}
 
 	public String getName() {
 		return name;

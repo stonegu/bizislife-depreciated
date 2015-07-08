@@ -3,6 +3,7 @@ package com.bizislife.core.hibernate.pojo;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,6 +33,10 @@ public class Organization extends UIDPojo{
 	@OneToMany(mappedBy="organization", cascade=CascadeType.ALL)
 	private Collection<EContact> eContacts;
 	
+	public Organization() {
+		this.uid = UUID.randomUUID().toString();
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -148,7 +153,8 @@ public class Organization extends UIDPojo{
 		return null;
 	}
 	
-	public void removeEContact(ContactType contactType, String contactValue) {
+	public Long removeEContact(ContactType contactType, String contactValue) {
+		Long delId = null;
 		if (contactType!=null && contactValue!=null) {
 			Collection<EContact> eContacts = getEContacts();
 			if (eContacts!=null) {
@@ -174,12 +180,16 @@ public class Organization extends UIDPojo{
 						delItem.getContactLocation().getEContacts().remove(delItem);
 						delItem.setContactLocation(null);
 					}
+					delId = delItem.getId();
 				}
 			}
 		}
+		
+		return delId;
 	}
 	
-	public void detachEcontact(ContactType contactType, String contactValue) {
+	public Long detachEcontact(ContactType contactType, String contactValue) {
+		Long detachedId = null;
 		if (contactType!=null && contactValue!=null) {
 			Collection<EContact> eContacts = getEContacts();
 			if (eContacts!=null) {
@@ -198,12 +208,14 @@ public class Organization extends UIDPojo{
 				}
 				if (detachItem!=null) {
 					if (detachItem.getOrganization()!=null) {
+						detachedId = detachItem.getId();
 						detachItem.setOrganization(null);
 						this.eContacts.remove(detachItem);
 					}
 				}
 			}
 		}
+		return detachedId;
 	}
 
 	@Override

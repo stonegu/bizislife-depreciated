@@ -1,5 +1,7 @@
 package com.bizislife.core.hibernate.pojo;
 
+import java.util.UUID;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +30,10 @@ public class EContact extends UIDPojo{
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="organizationid")
 	private Organization organization;
+
+	public EContact() {
+		this.uid = UUID.randomUUID().toString();
+	}
 
 	public ContactType getContactType() {
 		if (this.contactType!=null) {

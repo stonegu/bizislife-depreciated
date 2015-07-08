@@ -1,5 +1,7 @@
 package com.bizislife.core.hibernate.pojo;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -13,6 +15,10 @@ public class Role extends UIDPojo{
 	
 	@Column(name="description")
 	private String description;
+
+	public Role() {
+		this.uid = UUID.randomUUID().toString();
+	}
 
 	public String getName() {
 		return name;

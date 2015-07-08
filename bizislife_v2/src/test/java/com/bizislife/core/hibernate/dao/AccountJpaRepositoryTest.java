@@ -3,6 +3,7 @@ package com.bizislife.core.hibernate.dao;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +19,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bizislife.core.hibernate.pojo.Account;
+import com.bizislife.core.hibernate.pojo.Address;
+import com.bizislife.core.hibernate.pojo.ContactLocation;
 import com.bizislife.core.hibernate.pojo.EContact;
 import com.bizislife.core.hibernate.pojo.EContact.ContactType;
 
@@ -35,18 +38,78 @@ public class AccountJpaRepositoryTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		EContact eContact = new EContact();
-		eContact.setContactType(ContactType.Email);
-		eContact.setContactValue("stonegu@hotmail.com");
-		eContact.setUid(UUID.randomUUID().toString());
+		// account with 2 econtacts, both econtacts have relationship with account and account's contactlocation
+		Address address = new Address();
+		address.setPostalCode("l3p3t3");
+		ContactLocation contactLocation = new ContactLocation();
+		contactLocation.setAddress(address);
+		
+		EContact eContact1 = new EContact();
+		eContact1.setContactType(ContactType.Email);
+		eContact1.setContactValue("stonegu@hotmail.com");
+		eContact1.setUid(UUID.randomUUID().toString());
+		
+		eContact1.setContactLocation(contactLocation);
+		contactLocation.addEContact(eContact1);
+		
+		EContact eContact2 = new EContact();
+		eContact2.setContactType(ContactType.Email);
+		eContact2.setContactValue("stonegu@gmail.com");
+		eContact2.setUid(UUID.randomUUID().toString());
+		
+		eContact2.setContactLocation(contactLocation);
+		contactLocation.addEContact(eContact2);
+		
 		Account account = new Account();
 		account.setLoginname("stonegu");
 		account.setPwd("pwd");
 		account.setUid(ACCOUNT_STONE_UUID);
-		account.addEContact(eContact);
-		eContact.setAccount(account);
+		
+		account.addContactLocation(contactLocation);
+		contactLocation.setAccount(account);
+		
+		account.addEContact(eContact1);
+		eContact1.setAccount(account);
+		
+		account.addEContact(eContact2);
+		eContact2.setAccount(account);
+		
 		accountJpaRepository.save(account);
+		
+	}
+	
+	@Test
+	public void testSetup() {
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		// test account creation
+		assertThat(1, is(accounts.size()));
+		assertNotNull(accounts.get(0).getId());
+		
+		Account stoneguAccount = accounts.get(0);
+		
+		Collection<ContactLocation> contactLocations = stoneguAccount.getContactLocations();
+		
+		// test contactlocation creation
+		assertThat(1, is(contactLocations.size()));
+		assertNotNull(contactLocations.iterator().next().getId());
+		assertThat(2, is(contactLocations.iterator().next().getEContacts().size()));
+		assertTrue(stoneguAccount==contactLocations.iterator().next().getAccount());
+		
+		Collection<EContact> eContacts = stoneguAccount.getEContacts();
+
+		// test econtacts creation
+		assertThat(2, is(eContacts.size()));
+		for (EContact eContact: eContacts) {
+			// test id generation
+			assertNotNull(eContact.getId());
+			// test the relationship with contactLocation
+			assertNotNull(eContact.getContactLocation());
+			assertTrue(eContact.getContactLocation()==contactLocations.iterator().next());
+			
+			// test the relationship with account
+			assertNotNull(eContact.getAccount());
+			assertTrue(eContact.getAccount()==stoneguAccount);
+		}
 		
 	}
 

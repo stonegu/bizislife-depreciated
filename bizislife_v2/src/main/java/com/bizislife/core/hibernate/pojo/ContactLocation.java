@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -37,6 +38,10 @@ public class ContactLocation extends UIDPojo{
 	@OneToMany(mappedBy="contactLocation", cascade=CascadeType.ALL)
 	private Collection<EContact> eContacts;
 	
+	public ContactLocation() {
+		this.uid = UUID.randomUUID().toString();
+	}
+
 	public Address getAddress() {
 		return address;
 	}
@@ -91,9 +96,42 @@ public class ContactLocation extends UIDPojo{
 		}
 		return null;
 	}
-
-	// todo: delete & detach
 	
+	/**
+	 * Not using removeEcontact but using detachEcontact for avoiding misleading, because econtact could have relationship with account.
+	 * 
+	 * @param contactType
+	 * @param contactValue
+	 */
+	public Long detachEcontact(ContactType contactType, String contactValue) {
+		Long detachedId = null;
+		if (contactType!=null && contactValue!=null) {
+			if (this.eContacts!=null) {
+				EContact eContact = new EContact();
+				eContact.setContactType(contactType);
+				eContact.setContactValue(contactValue);
+				
+				Iterator<EContact> eContactIterator = this.eContacts.iterator();
+				EContact detachItem = null;
+				while (eContactIterator.hasNext()) {
+					EContact ec = (EContact) eContactIterator.next();
+					if (ec.equals(eContact)) {
+						detachItem = ec;
+						break;
+					}
+				}
+				if (detachItem!=null) {
+					if (detachItem.getContactLocation()!=null) {
+						detachedId = detachItem.getId();
+						detachItem.setContactLocation(null);
+						this.eContacts.remove(detachItem);
+					}
+				}
+			}
+		}
+		return detachedId;
+		
+	}
 	
 //	public void setEContacts(Collection<EContact> eContacts) {
 //		this.eContacts = eContacts;

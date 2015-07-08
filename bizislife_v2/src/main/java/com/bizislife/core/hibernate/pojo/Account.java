@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -52,6 +53,10 @@ public class Account extends UIDPojo{
 	@OneToMany(mappedBy="account", cascade=CascadeType.ALL)
 	private Collection<EContact> eContacts;
 	
+	public Account() {
+		this.uid = UUID.randomUUID().toString();
+	}
+
 	public String getLoginname() {
 		return loginname;
 	}
@@ -233,7 +238,8 @@ public class Account extends UIDPojo{
 		return null;
 	}
 	
-	public void removeEContact(ContactType contactType, String contactValue) {
+	public Long removeEContact(ContactType contactType, String contactValue) {
+		Long delId = null;
 		if (contactType!=null && contactValue!=null) {
 			Collection<EContact> eContacts = getEContacts();
 			if (eContacts!=null) {
@@ -259,12 +265,15 @@ public class Account extends UIDPojo{
 						delItem.getContactLocation().getEContacts().remove(delItem);
 						delItem.setContactLocation(null);
 					}
+					delId = delItem.getId();
 				}
 			}
 		}
+		return delId;
 	}
 	
-	public void detachEcontact(ContactType contactType, String contactValue) {
+	public Long detachEcontact(ContactType contactType, String contactValue) {
+		Long detachedId = null;
 		if (contactType!=null && contactValue!=null) {
 			Collection<EContact> eContacts = getEContacts();
 			if (eContacts!=null) {
@@ -283,12 +292,14 @@ public class Account extends UIDPojo{
 				}
 				if (detachItem!=null) {
 					if (detachItem.getAccount()!=null) {
+						detachedId = detachItem.getId();
 						detachItem.setAccount(null);
 						this.eContacts.remove(detachItem);
 					}
 				}
 			}
 		}
+		return detachedId;
 	}
 	
 	@Override
