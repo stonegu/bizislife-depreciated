@@ -2,7 +2,9 @@ package com.bizislife.core.hibernate.pojo;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,6 +14,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.bizislife.core.controller.component.ApiResponse;
+import com.bizislife.core.hibernate.pojo.EContact.ContactType;
 
 @Entity
 @Table(name="account")
@@ -41,8 +46,11 @@ public class Account extends UIDPojo{
 	@JoinTable(name="role_account", joinColumns=@JoinColumn(name="aid"), inverseJoinColumns=@JoinColumn(name="rid"))
 	private Collection<Role> roles;
 	
-	@OneToMany(mappedBy="account", cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="account", cascade=CascadeType.ALL, orphanRemoval=true)
 	private Collection<ContactLocation> contactLocations;
+	
+	@OneToMany(mappedBy="account", cascade=CascadeType.ALL)
+	private Collection<EContact> eContacts;
 	
 	public String getLoginname() {
 		return loginname;
@@ -150,10 +158,143 @@ public class Account extends UIDPojo{
 		}
 	}
 
+	public Collection<EContact> getEContacts() {
+		HashSet<EContact> eContacts = new HashSet<>();
+		if (this.eContacts!=null) {
+			eContacts.addAll(this.eContacts);
+		}
+		
+		if (this.contactLocations!=null) {
+			for (ContactLocation contactLocation : this.contactLocations) {
+				if (contactLocation.getEContacts()!=null) {
+					eContacts.addAll(contactLocation.getEContacts());
+				}
+			}
+		}
+		
+		return eContacts;
+	}
+	
+	public EContact getEContact(ContactType contactType, String contactValue) {
+		if (contactType!=null && contactValue!=null) {
+			Collection<EContact> contacts = getEContacts();
+			if (contacts!=null) {
+				EContact eContact = new EContact();
+				eContact.setContactType(contactType);
+				eContact.setContactValue(contactValue);
+				Iterator<EContact> econtactIterator = contacts.iterator();
+				while (econtactIterator.hasNext()) {
+					EContact ec = (EContact) econtactIterator.next();
+					if (ec.equals(eContact)) {
+						return ec;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @param eContact
+	 * @return null if param eContact is null, <br/>
+	 * 		true if eContact added or created relationship with Account, <br/> 
+	 * 		false if same eContact exist and already has relationship with Account.
+	 */
+	public Boolean addEContact(EContact eContact) {
+		if (eContact!=null) {
+			// check eContact exist:
+			Collection<EContact> eContacts = getEContacts();
+			EContact exist = null;
+			if (eContacts!=null && eContacts.size()>0) {
+				for (EContact ec : eContacts) {
+					if (ec.equals(eContact)) {
+						exist = ec;
+						break;
+					}
+				}
+			}
+			
+			if (exist==null) {
+				if (this.eContacts==null) this.eContacts = new HashSet<>();
+				eContact.setAccount(this);
+				this.eContacts.add(eContact);
+				return true;
+			} else {
+				if (exist.getAccount()==null) { // create relationship only
+					if (this.eContacts==null) this.eContacts = new HashSet<>();
+					exist.setAccount(this);
+					this.eContacts.add(exist);
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public void removeEContact(ContactType contactType, String contactValue) {
+		if (contactType!=null && contactValue!=null) {
+			Collection<EContact> eContacts = getEContacts();
+			if (eContacts!=null) {
+				EContact eContact = new EContact();
+				eContact.setContactType(contactType);
+				eContact.setContactValue(contactValue);
+				
+				Iterator<EContact> eContactIterator = eContacts.iterator();
+				EContact delItem = null;
+				while (eContactIterator.hasNext()) {
+					EContact ec = (EContact) eContactIterator.next();
+					if (ec.equals(eContact)) {
+						delItem = ec;
+						break;
+					}
+				}
+				if (delItem!=null) {
+					if (delItem.getAccount()!=null) {
+						delItem.setAccount(null);
+						this.eContacts.remove(delItem);
+					}
+					if (delItem.getContactLocation()!=null) {
+						delItem.getContactLocation().getEContacts().remove(delItem);
+						delItem.setContactLocation(null);
+					}
+				}
+			}
+		}
+	}
+	
+	public void detachEcontact(ContactType contactType, String contactValue) {
+		if (contactType!=null && contactValue!=null) {
+			Collection<EContact> eContacts = getEContacts();
+			if (eContacts!=null) {
+				EContact eContact = new EContact();
+				eContact.setContactType(contactType);
+				eContact.setContactValue(contactValue);
+				
+				Iterator<EContact> eContactIterator = eContacts.iterator();
+				EContact detachItem = null;
+				while (eContactIterator.hasNext()) {
+					EContact ec = (EContact) eContactIterator.next();
+					if (ec.equals(eContact)) {
+						detachItem = ec;
+						break;
+					}
+				}
+				if (detachItem!=null) {
+					if (detachItem.getAccount()!=null) {
+						detachItem.setAccount(null);
+						this.eContacts.remove(detachItem);
+					}
+				}
+			}
+		}
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 1;
 		result = prime * result
 				+ ((firstname == null) ? 0 : firstname.hashCode());
 		result = prime * result
@@ -168,7 +309,9 @@ public class Account extends UIDPojo{
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+//		if (!super.equals(obj))
+//			return false;
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -200,9 +343,10 @@ public class Account extends UIDPojo{
 	public String toString() {
 		return "Account [loginname=" + loginname + ", pwd=" + pwd
 				+ ", firstname=" + firstname + ", lastname=" + lastname
-				+ ", organizations=" + organizations + ", groups=" + groups
-				+ ", roles=" + roles + ", contactLocations=" + contactLocations
-				+ "]";
+				+ ", preferlocale=" + preferlocale + ", organizations="
+				+ organizations + ", groups=" + groups + ", roles=" + roles
+				+ ", contactLocations=" + contactLocations + ", eContacts="
+				+ eContacts + "]";
 	}
 
 }

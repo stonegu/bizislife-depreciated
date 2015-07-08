@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS organization (
 id BIGINT NOT NULL AUTO_INCREMENT,
 uid VARCHAR(255) NOT NULL,
 oname VARCHAR(255),
+INDEX uid (uid),
 PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
@@ -25,6 +26,7 @@ pwd VARCHAR(50),
 firstname VARCHAR(100),
 lastname VARCHAR(100),
 preferlocale CHAR(3),
+INDEX uid (uid),
 PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
@@ -45,6 +47,7 @@ id BIGINT NOT NULL AUTO_INCREMENT,
 uid VARCHAR(255) NOT NULL,
 gname VARCHAR(255),
 description TEXT,
+INDEX uid (uid),
 PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
@@ -65,6 +68,7 @@ id BIGINT NOT NULL AUTO_INCREMENT,
 uid VARCHAR(255) NOT NULL,
 rname VARCHAR(255),
 description TEXT,
+INDEX uid (uid),
 PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
@@ -106,6 +110,7 @@ INDEX fk_oc_orgnization (orgid),
 INDEX fk_ac_account (accountid),
 CONSTRAINT fk_oc_orgnization FOREIGN KEY (orgid) REFERENCES organization (id),
 CONSTRAINT fk_ac_account FOREIGN KEY (accountid) REFERENCES account (id),
+INDEX uid (uid),
 PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
@@ -117,7 +122,14 @@ uid VARCHAR(255) NOT NULL,
 contacttype VARCHAR(30),
 contactvalue VARCHAR(255),
 contactlocationid BIGINT,
+accountid BIGINT,
+organizationid BIGINT,
 INDEX fk_ce_contactlocation (contactlocationid),
+INDEX fk_ae_account (accountid),
+INDEX fk_oe_organization (organizationid),
 CONSTRAINT fk_ce_contactlocation FOREIGN KEY (contactlocationid) REFERENCES contactlocation (id),
+CONSTRAINT fk_ae_account FOREIGN KEY (accountid) REFERENCES account (id),
+CONSTRAINT fk_oe_organization FOREIGN KEY (organizationid) REFERENCES organization (id),
+INDEX uid (uid),
 PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;

@@ -21,6 +21,14 @@ public class EContact extends UIDPojo{
 	@JoinColumn(name="contactlocationid")
 	private ContactLocation contactLocation;
 	
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="accountid")
+	private Account account;
+	
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="organizationid")
+	private Organization organization;
+
 	public ContactType getContactType() {
 		if (this.contactType!=null) {
 			return ContactType.getContactType(this.contactType);
@@ -48,10 +56,39 @@ public class EContact extends UIDPojo{
 		this.contactLocation = contactLocation;
 	}
 
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
+	public Organization getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(Organization organization) {
+		this.organization = organization;
+	}
+	
+	public boolean belongToUuid(String uuid) {
+		if (uuid!=null) {
+			return (this.account!=null?this.account.getUid().equals(uuid):false)
+					|| (this.organization!=null?this.organization.getUid().equals(uuid):false)
+							|| (this.contactLocation!=null?this.contactLocation.getUid().equals(uuid):false)
+									|| ((this.contactLocation!=null && this.contactLocation.getAccount()!=null)?
+											this.contactLocation.getAccount().getUid().equals(uuid):false)
+											|| ((this.contactLocation!=null && this.contactLocation.getOrganization()!=null)?
+													this.contactLocation.getOrganization().getUid().equals(uuid):false);
+		}
+		return false;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 1;
 		result = prime * result
 				+ ((contactType == null) ? 0 : contactType.hashCode());
 		result = prime * result
@@ -63,7 +100,9 @@ public class EContact extends UIDPojo{
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+//		if (!super.equals(obj))
+//			return false;
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -84,7 +123,7 @@ public class EContact extends UIDPojo{
 	@Override
 	public String toString() {
 		return "EContact [contactType=" + contactType + ", contactValue="
-				+ contactValue + "]";
+				+ contactValue + ", contactLocation=" + contactLocation + "]";
 	}
 
 	public static enum ContactType {

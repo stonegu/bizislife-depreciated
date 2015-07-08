@@ -1,7 +1,5 @@
 package com.bizislife.util;
 
-import java.util.Locale;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

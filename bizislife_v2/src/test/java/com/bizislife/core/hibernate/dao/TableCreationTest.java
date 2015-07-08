@@ -3,6 +3,7 @@ package com.bizislife.core.hibernate.dao;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,9 @@ public class TableCreationTest {
 	
 	@Autowired
 	private ContactlocationJpaRepository contactlocationJpaRepository;
+	
+	@Autowired
+	private EContactJpaRepository eContactJpaRepository;
 
 	@Autowired
 	private GroupJpaRepository groupJpaRepository;
@@ -131,18 +135,11 @@ public class TableCreationTest {
 		account3.addRole(role2);
 		account3.addRole(role3);
 		
-//		accountJpaRepository.save(account1);
-//		accountJpaRepository.save(account2);
-//		accountJpaRepository.save(account3);
-		
 		// add role to group
 		group1.addRole(role1);
 		group2.addRole(role1);
 		group2.addRole(role2);
 		group2.addRole(role3);
-		
-//		groupJpaRepository.save(group1);
-//		groupJpaRepository.save(group2);
 		
 		// create contactLocations for org1
 		ContactLocation con1 = new ContactLocation();
@@ -168,8 +165,6 @@ public class TableCreationTest {
 		org1.addContactLocation(con1);
 		org1.addContactLocation(con2);
 		
-//		orgJpaRepository.save(org1);
-		
 		// create contactLocations for account2
 		ContactLocation con3 = new ContactLocation();
 		con3.setUid(UUID.randomUUID().toString());
@@ -194,8 +189,6 @@ public class TableCreationTest {
 		account2.addContactLocation(con3);
 		account2.addContactLocation(con4);
 		
-//		accountJpaRepository.save(account2);
-		
 		// add eContacts to contactLocation
 		EContact eContact1 = new EContact();
 		eContact1.setUid(UUID.randomUUID().toString());
@@ -212,7 +205,32 @@ public class TableCreationTest {
 		con1.addEContact(eContact1);
 		con1.addEContact(eContact2);
 		
-//		contactlocationJpaRepository.save(con1);
+		
+		
+		// ************ account registration ************** 
+		Account accountRegist1 = new Account();
+		accountRegist1.setUid(UUID.randomUUID().toString());
+		accountRegist1.setLoginname("stonegu");
+		accountRegist1.setPwd("pwd");
+		EContact eContact1ForAccountRegist1 = new EContact();
+		eContact1ForAccountRegist1.setUid(UUID.randomUUID().toString());
+		eContact1ForAccountRegist1.setAccount(accountRegist1);
+		eContact1ForAccountRegist1.setContactType(ContactType.Email);
+		eContact1ForAccountRegist1.setContactValue("stonegu@hotmail.com");
+		accountRegist1.addEContact(eContact1ForAccountRegist1);
+		accountJpaRepository.save(accountRegist1);
+		
+		// *********** add contactLocation to stonegu account ************
+		ContactLocation contactLocation1ForAccountRegist1 = new ContactLocation();
+		contactLocation1ForAccountRegist1.setAccount(accountRegist1);
+		contactLocation1ForAccountRegist1.setUid(UUID.randomUUID().toString());
+		Address addressForContactLocation1ForAccountRegist1 = new Address();
+		addressForContactLocation1ForAccountRegist1.setCity("Toronto");
+		addressForContactLocation1ForAccountRegist1.setPostalCode("l3p3t3");
+		contactLocation1ForAccountRegist1.setAddress(addressForContactLocation1ForAccountRegist1);
+		accountRegist1.addContactLocation(contactLocation1ForAccountRegist1);
+		accountJpaRepository.save(accountRegist1);
+		
 	}
 
 	@Test
@@ -233,10 +251,10 @@ public class TableCreationTest {
 		
 		List<Account> savedAccounts = accountJpaRepository.findAll();
 		assertNotNull(savedAccounts);
-		assertThat(3, is(savedAccounts.size()));
+		assertThat(4, is(savedAccounts.size()));
 		
 		for (Account account : savedAccounts) {
-			assertNotNull(account.getOrganizations());
+//			assertNotNull(account.getOrganizations());
 			if(account.getLoginname().equals("account1")) {
 				assertThat(1, is(account.getOrganizations().size()));
 			} else if(account.getLoginname().equals("account2")) {
@@ -269,7 +287,7 @@ public class TableCreationTest {
 		assertNotNull(savedAccounts);
 		
 		for (Account account : savedAccounts) {
-			assertNotNull(account.getRoles());
+//			assertNotNull(account.getRoles());
 			if (account.getLoginname().equals("account1")) {
 				assertThat(1, is(account.getRoles().size()));
 			} else if (account.getLoginname().equals("account2")) {
@@ -339,8 +357,6 @@ public class TableCreationTest {
 					assertThat("account2", is(contactLocation.getAccount().getLoginname()));
 					assertNull(contactLocation.getOrganization());
 				}
-			} else {
-				assertNull(account.getContactLocations());
 			}
 		}
 		
@@ -381,7 +397,7 @@ public class TableCreationTest {
 		
 		List<Account> savedAccounts = accountJpaRepository.findAll();
 		assertNotNull(savedAccounts);
-		assertThat(3, is(savedAccounts.size()));
+		assertThat(4, is(savedAccounts.size()));
 		
 		List<Group> savedGroups = groupJpaRepository.findAll();
 		assertNotNull(savedGroups);
@@ -393,9 +409,261 @@ public class TableCreationTest {
 		
 		List<ContactLocation> savedContactLocations = contactlocationJpaRepository.findAll();
 		assertNotNull(savedContactLocations);
-		assertThat(4, is(savedContactLocations.size()));
+		assertThat(5, is(savedContactLocations.size()));
 		
 	}
 	
+	/*	
+	 * test relationship for Account, ContactLocation, EContact 
+	*/	
+	@Test
+	public void accountRegistration() {
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		assertThat(1, is(accounts.size()));
+		assertThat(1, is(accounts.get(0).getEContacts().size()));
+	}
+	
+	@Test
+	public void addSameEmailToAccount_eContact() {
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		assertThat(1, is(accounts.size()));
+		
+		if (accounts!=null && accounts.size()==1) {
+			Account stoneguAccount = accounts.get(0);
+			
+			EContact eContact1ForAccountRegist = new EContact();
+			eContact1ForAccountRegist.setUid(UUID.randomUUID().toString());
+			eContact1ForAccountRegist.setAccount(stoneguAccount);
+			eContact1ForAccountRegist.setContactType(ContactType.Email);
+			eContact1ForAccountRegist.setContactValue("stonegu@hotmail.com");
+			stoneguAccount.addEContact(eContact1ForAccountRegist);
+			accountJpaRepository.save(stoneguAccount);
+			assertThat(1,  is(stoneguAccount.getEContacts().size()));
+		}
+	}
+	
+	@Test
+	public void addDiffEmailToAccount_eContact() {
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		assertThat(1, is(accounts.size()));
+		
+		if (accounts!=null && accounts.size()==1) {
+			Account stoneguAccount = accounts.get(0);
+			
+			EContact eContact1ForAccountRegist = new EContact();
+			eContact1ForAccountRegist.setUid(UUID.randomUUID().toString());
+			eContact1ForAccountRegist.setAccount(stoneguAccount);
+			eContact1ForAccountRegist.setContactType(ContactType.Email);
+			eContact1ForAccountRegist.setContactValue("stonegu2@hotmail.com");
+			stoneguAccount.addEContact(eContact1ForAccountRegist);
+			accountJpaRepository.save(stoneguAccount);
+			assertThat(2,  is(stoneguAccount.getEContacts().size()));
+		}
+	}
+	
+	@Test
+	public void addSameEmailToAccount_contactLocation() {
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		assertThat(1, is(accounts.size()));
+		
+		if (accounts!=null && accounts.size()==1) {
+			Account stoneguAccount = accounts.get(0);
+			
+			Collection<ContactLocation> contactLocations = stoneguAccount.getContactLocations();
+			assertThat(1, is(contactLocations.size()));
+			
+			ContactLocation contactLocation = contactLocations.iterator().next();
+			EContact eContact1ForAccountRegist = new EContact();
+			eContact1ForAccountRegist.setUid(UUID.randomUUID().toString());
+			eContact1ForAccountRegist.setContactType(ContactType.Email);
+			eContact1ForAccountRegist.setContactValue("stonegu@hotmail.com");
+			eContact1ForAccountRegist.setContactLocation(contactLocation);
+			contactLocation.addEContact(eContact1ForAccountRegist);
+			contactlocationJpaRepository.save(contactLocation);
+			assertThat(1, is(stoneguAccount.getEContacts().size()));
+		}
+	}
+	
+	@Test
+	public void addDiffEmailToAccount_contactLocation() {
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		assertThat(1, is(accounts.size()));
+		
+		if (accounts!=null && accounts.size()==1) {
+			Account stoneguAccount = accounts.get(0);
+			
+			Collection<ContactLocation> contactLocations = stoneguAccount.getContactLocations();
+			assertThat(1, is(contactLocations.size()));
+			
+			ContactLocation contactLocation = contactLocations.iterator().next();
+			EContact eContact1ForAccountRegist = new EContact();
+			eContact1ForAccountRegist.setUid(UUID.randomUUID().toString());
+			eContact1ForAccountRegist.setContactType(ContactType.Email);
+			eContact1ForAccountRegist.setContactValue("stonegu2@hotmail.com");
+			eContact1ForAccountRegist.setContactLocation(contactLocation);
+			contactLocation.addEContact(eContact1ForAccountRegist);
+			contactlocationJpaRepository.save(contactLocation);
+			assertThat(2, is(stoneguAccount.getEContacts().size()));
+		}
+	}
+	
+	@Test
+	public void createRelationshipForAccountAndExistingEcontact() {
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		assertThat(1, is(accounts.size()));
+		
+		if (accounts!=null && accounts.size()==1) {
+			Account stoneguAccount = accounts.get(0);
+			
+			Collection<ContactLocation> contactLocations = stoneguAccount.getContactLocations();
+			assertThat(1, is(contactLocations.size()));
+			
+			ContactLocation contactLocation = contactLocations.iterator().next();
+			EContact eContact1ForAccountRegist = new EContact();
+			eContact1ForAccountRegist.setUid(UUID.randomUUID().toString());
+			eContact1ForAccountRegist.setContactType(ContactType.Email);
+			eContact1ForAccountRegist.setContactValue("stonegu2@hotmail.com");
+			contactLocation.addEContact(eContact1ForAccountRegist);
+			contactlocationJpaRepository.save(contactLocation);
+			assertThat(2, is(stoneguAccount.getEContacts().size()));
+			
+			// before: one econtact has account relationship, and another one doesn't have account relationship
+			for (EContact eContact: stoneguAccount.getEContacts()) {
+				if (eContact.getContactValue().equals("stonegu@hotmail.com")) {
+					assertNotNull(eContact.getAccount());
+				} else if (eContact.getContactValue().equals("stonegu2@hotmail.com")) {
+					assertNull(eContact.getAccount());
+				}
+			}
+			
+			// after create relationship for account and existing econtact
+			EContact newEContact = new EContact();
+			newEContact.setContactType(ContactType.Email);
+			newEContact.setContactValue("stonegu2@hotmail.com");
+			newEContact.setUid(UUID.randomUUID().toString());
+			stoneguAccount.addEContact(newEContact);
+			accountJpaRepository.save(stoneguAccount);
+			for (EContact eContact: stoneguAccount.getEContacts()) {
+				if (eContact.getContactValue().equals("stonegu@hotmail.com")) {
+					assertNotNull(eContact.getAccount());
+				} else if (eContact.getContactValue().equals("stonegu2@hotmail.com")) {
+					assertNotNull(eContact.getAccount());
+					assertThat(stoneguAccount.getContactLocations().iterator().next().getEContacts().iterator().next().getId(), is(eContact.getId()));
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void createRelationshipForContactlocationAndExistingEcontact() {
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		assertThat(1, is(accounts.size()));
+		assertThat("stonegu@hotmail.com", is(accounts.get(0).getEContacts().iterator().next().getContactValue()));
+		assertThat(1, is(accounts.get(0).getContactLocations().size()));
+		ContactLocation contactLocation = accounts.get(0).getContactLocations().iterator().next();
+		assertThat(null, is(contactLocation.getEContacts()));
+		
+		EContact eContact = new EContact();
+		eContact.setContactLocation(contactLocation);
+		eContact.setContactType(ContactType.Email);
+		eContact.setContactValue("stonegu@hotmail.com");
+		contactLocation.addEContact(eContact);
+		contactlocationJpaRepository.save(contactLocation);
+		
+		assertThat(1, is(contactLocation.getEContacts().size()));
+		assertThat(1, is(accounts.get(0).getEContacts().size()));
+		assertThat(contactLocation.getEContacts().iterator().next().getId(), is(accounts.get(0).getEContacts().iterator().next().getId()));
+		
+		assertNotNull(accounts.get(0).getEContacts().iterator().next().getAccount());
+		assertThat("stonegu", is(accounts.get(0).getEContacts().iterator().next().getAccount().getLoginname()));
+		assertNotNull(accounts.get(0).getEContacts().iterator().next().getContactLocation());
+		assertThat("l3p3t3", is(accounts.get(0).getEContacts().iterator().next().getContactLocation().getAddress().getPostalCode()));
+	}
+	
+	@Test
+	public void removeAndDetachEcontact_fromAccount() {
+		// create/update two econtact for user 'stonegu', these two econtacts have relationship with account and contactlocation
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		assertThat(1, is(accounts.size()));
+		Account stoneguAccount = accounts.get(0);
+		assertThat("stonegu@hotmail.com", is(stoneguAccount.getEContacts().iterator().next().getContactValue()));
+		assertNotNull(stoneguAccount.getEContacts().iterator().next().getAccount());
+		assertNull(stoneguAccount.getEContacts().iterator().next().getContactLocation());
+		assertThat(1, is(stoneguAccount.getContactLocations().size()));
+		ContactLocation contactLocation = stoneguAccount.getContactLocations().iterator().next();
+		assertThat(null, is(contactLocation.getEContacts()));
+		// create relationship for 'stonegu@hotmail.com' with contactlocation
+		EContact eContact1 = new EContact();
+		eContact1.setContactType(ContactType.Email);
+		eContact1.setContactValue("stonegu@hotmail.com");
+		contactLocation.addEContact(eContact1);
+		contactlocationJpaRepository.save(contactLocation);
+		// make sure 'stonegu@hotmail.com' has relationship with contactlocation too
+		assertThat(1, is(stoneguAccount.getEContacts().size()));
+		assertNotNull(stoneguAccount.getEContacts().iterator().next().getContactLocation());
+		assertThat(true, is(stoneguAccount.getEContacts().iterator().next()==stoneguAccount.getContactLocations().iterator().next().getEContacts().iterator().next()));
+		
+		// add another econtact
+		EContact eContact2 = new EContact();
+		eContact2.setContactType(ContactType.Email);
+		eContact2.setContactValue("stonegu@gmail.com");
+		eContact2.setUid(UUID.randomUUID().toString());
+		contactLocation.addEContact(eContact2);
+		stoneguAccount.addEContact(eContact2);
+		accountJpaRepository.save(stoneguAccount);
+		assertThat(2, is(stoneguAccount.getEContacts().size()));
+		
+		// double check two econtacts have relationship with account and contactlocation
+		for (EContact eContact : stoneguAccount.getEContacts()) {
+			assertNotNull(eContact.getAccount());
+			assertNotNull(eContact.getContactLocation());
+			assertNotNull(eContact.getId());
+		}
+		
+		// ***** time to detach ***************
+		stoneguAccount.detachEcontact(ContactType.Email, "stonegu@gmail.com");
+		assertThat(2, is(stoneguAccount.getEContacts().size()));
+		EContact hotmailEconContact = stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com");
+		assertNotNull(hotmailEconContact);
+		EContact gmailEcoContact = stoneguAccount.getEContact(ContactType.Email, "stonegu@gmail.com");
+		assertNotNull(gmailEcoContact);
+		assertNull(gmailEcoContact.getAccount());
+		assertNotNull(gmailEcoContact.getContactLocation());
+		assertNotNull(hotmailEconContact.getAccount());
+		assertNotNull(hotmailEconContact.getContactLocation());
+		
+		// check orphanRemoval
+		List<EContact> totalEContacts_beforeDel = eContactJpaRepository.findAll();
+		EContact stoneguAtgmailDOTcom = null;
+		if (totalEContacts_beforeDel!=null) {
+			for (EContact ec : totalEContacts_beforeDel) {
+				if (ec.getContactValue().equals("stonegu@gmail.com")) {
+					stoneguAtgmailDOTcom = ec;
+				}
+			}
+		}
+		assertNotNull(stoneguAtgmailDOTcom);
+		
+		// ***** time to delete *************
+		stoneguAccount.removeEContact(ContactType.Email, "stonegu@gmail.com");
+		assertThat(1, is(stoneguAccount.getEContacts().size()));
+		assertNotNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com"));
+		assertNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@gmail.com"));
+		assertNotNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com").getAccount());
+		assertNotNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com").getContactLocation());
+
+		// check orphanRemoval
+		List<EContact> totalEContacts_afterDel = eContactJpaRepository.findAll();
+		stoneguAtgmailDOTcom = null;
+		if (totalEContacts_afterDel!=null) {
+			for (EContact ec : totalEContacts_afterDel) {
+				if (ec.getContactValue().equals("stonegu@gmail.com")) {
+					stoneguAtgmailDOTcom = ec;
+				}
+			}
+		}
+		assertNull(stoneguAtgmailDOTcom);
+		
+	}
 	
 }

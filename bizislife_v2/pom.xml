@@ -251,14 +251,91 @@
 			<artifactId>validation-api</artifactId>
 			<version>1.1.0.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.0.1.Final</version>
+		</dependency>
 	</dependencies>
+	
+	<!-- 
+		profiles for different environment's maven building:
+		http://maven.apache.org/guides/mini/guide-building-for-different-environments.html
+		http://maven.apache.org/guides/introduction/introduction-to-profiles.html
+		http://www.tutorialspoint.com/maven/maven_build_profiles.htm 
+	 -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echo>Using GlobalConfiguration.dev.properties</echo>
+										<delete file="${project.build.outputDirectory}/GlobalConfiguration.properties"/>
+										<copy file="src/main/resources/GlobalConfiguration.dev.properties" tofile="${project.build.outputDirectory}/GlobalConfiguration.properties"/>										
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>qa</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echo>Using GlobalConfiguration.qa.properties</echo>
+										<delete file="${project.build.outputDirectory}/GlobalConfiguration.properties"/>
+										<copy file="src/main/resources/GlobalConfiguration.qa.properties" tofile="${project.build.outputDirectory}/GlobalConfiguration.properties"/>										
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
+				<version>2.6</version>
 				<executions>
 					<execution>
 						<id>default-war</id>
@@ -283,10 +360,7 @@
 				</includes>
 			</resource>
 		</resources>
+		
 	</build>
-
-
-
-
 
 </project>
