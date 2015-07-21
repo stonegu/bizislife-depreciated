@@ -13,7 +13,11 @@
 	</appender>
 
   	<appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>${catalina.home}/logs/bizislife.log</File>
+  	
+		<File>${catalina.home}/logs/bizislife_v2.log</File>
+<!--   	
+		<file>C:/Users/stoneg/Downloads/temp/bizislife.log</file>
+ -->		
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 		    <!-- daily rollover -->
 			<FileNamePattern>bizislife.%d{yyyy-MM-dd}.log</FileNamePattern>
@@ -30,45 +34,49 @@
 		</encoder> 	    
   	</appender>
 
-	<logger name="org.bizislife.core.configuration" additivity="false">
+	<logger name="com.bizislife.core.configuration" additivity="false">
 	    <level value="DEBUG" />
 		<appender-ref ref="dailyRollingFileAppender"/>
 		<appender-ref ref="consoleAppender" />
 	</logger>
-	<logger name="org.bizislife.core.controller" additivity="false">
+	<logger name="com.bizislife.core.controller" additivity="false">
 	    <level value="DEBUG" />
 		<appender-ref ref="dailyRollingFileAppender"/>
 		<appender-ref ref="consoleAppender" />
 	</logger>
-	<logger name="org.bizislife.core.filter" additivity="false">
+	<logger name="com.bizislife.core.event" additivity="false">
 	    <level value="DEBUG" />
 		<appender-ref ref="dailyRollingFileAppender"/>
 		<appender-ref ref="consoleAppender" />
 	</logger>
-	<logger name="org.bizislife.core.hibernate.dao" additivity="false">
+	<logger name="com.bizislife.core.filter" additivity="false">
 	    <level value="DEBUG" />
 		<appender-ref ref="dailyRollingFileAppender"/>
 		<appender-ref ref="consoleAppender" />
 	</logger>
-	<logger name="org.bizislife.core.listener" additivity="false">
+	<logger name="com.bizislife.core.hibernate.dao" additivity="false">
 	    <level value="DEBUG" />
 		<appender-ref ref="dailyRollingFileAppender"/>
 		<appender-ref ref="consoleAppender" />
 	</logger>
-	<logger name="org.bizislife.core.service" additivity="false">
+	<logger name="com.bizislife.core.listener" additivity="false">
 	    <level value="DEBUG" />
 		<appender-ref ref="dailyRollingFileAppender"/>
 		<appender-ref ref="consoleAppender" />
 	</logger>
-	<logger name="org.bizislife.util" additivity="false">
+	<logger name="com.bizislife.core.service" additivity="false">
+	    <level value="DEBUG" />
+		<appender-ref ref="dailyRollingFileAppender"/>
+		<appender-ref ref="consoleAppender" />
+	</logger>
+	<logger name="com.bizislife.util" additivity="false">
 	    <level value="DEBUG" />
 		<appender-ref ref="dailyRollingFileAppender"/>
 		<appender-ref ref="consoleAppender" />
 	</logger>
 
 	<root>
-		<level value="INFO" />
-		<appender-ref ref="dailyRollingFileAppender"/>
+		<level value="WARN" />
 		<appender-ref ref="consoleAppender" />
 	</root>
 	

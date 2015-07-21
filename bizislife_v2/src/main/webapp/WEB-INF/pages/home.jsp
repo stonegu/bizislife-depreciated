@@ -54,7 +54,7 @@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" ng-controller="menuController">
                 <ul class="nav navbar-nav navbar-right">
                     <li class="hidden">
                         <a href="#page-top"></a>
@@ -77,6 +77,10 @@
                     <li>
 	                    <a href="#sign" data-toggle="modal">Login</a>
                     </li>
+                    <li>
+	                    <a>Logout</a>
+                    </li>
+                    
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -778,6 +782,9 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="/brand/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Bootstrap UI JavaScript -->
+    <script src="/brand/angularUI/UI-Bootstrap/ui-bootstrap-tpls.js"></script>
 
     <!-- Plugin JavaScript -->
     <script src="/brand/jQuery/jquery.easing.js"></script>

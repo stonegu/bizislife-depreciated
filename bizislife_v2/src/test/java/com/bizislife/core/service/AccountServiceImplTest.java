@@ -45,8 +45,9 @@ public class AccountServiceImplTest {
 		MockitoAnnotations.initMocks(this);
 	}
 	
-	@Test
-	public void testRemoveEContact() {
-	}
+	// which has been test in TableCreationTest.delEcontactFromAccount
+//	@Test
+//	public void testRemoveEContact() {
+//	}
 
 }

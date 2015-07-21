@@ -3,6 +3,7 @@ package com.bizislife.core.controller.component;
 import java.io.Serializable;
 
 import com.bizislife.util.annotation.ValidEmail;
+import com.bizislife.util.annotation.ValidPassword;
 
 public class SignupForm implements Serializable{
 	
@@ -11,6 +12,7 @@ public class SignupForm implements Serializable{
 	private String username;
 	@ValidEmail
 	private String email;
+	@ValidPassword
 	private String pwd;
 	private String confirmpwd;
 	

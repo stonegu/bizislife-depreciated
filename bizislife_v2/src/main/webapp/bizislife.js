@@ -1,4 +1,4 @@
-/*! StoneGu - v1.0.0 - 2015-06-12
+/*! StoneGu - v1.0.0 - 2015-07-13
 * Copyright (c) 2015 ; Licensed  */
 /*!
  * Start Bootstrap - Agency Bootstrap Theme (http://startbootstrap.com)
@@ -29,7 +29,10 @@ $('.navbar-collapse ul li a').click(function() {
 });;'use strict';
 
 (function () {
-	var bizApp = angular.module('bizApp', ['ngFabForm', 'ngMessages', 'ngAnimate', 'signupControllerModle']);
+	var bizApp = angular.module('bizApp', ['ngFabForm', 'ngMessages', 'ngAnimate', 
+	                                       'signupControllerModle',
+	                                       'menuControllerModle']);
+	
 	bizApp.config(['ngFabFormProvider', function(ngFabFormProvider) {
         ngFabFormProvider.extendConfig({
             setAsteriskForRequiredLabel: true
@@ -53,6 +56,17 @@ $('.navbar-collapse ul li a').click(function() {
 		}
 	}]);
 	
+})();
+
+
+;'use strict';
+
+(function () {
+	var menuControllerModle = angular.module('menuControllerModle', ['ui.bootstrap', 'bizAppService']);
+	
+	menuControllerModle.controller('menuController', ['$scope', '$log', function($scope, $log) {
+		
+	}]);
 })();
 
 

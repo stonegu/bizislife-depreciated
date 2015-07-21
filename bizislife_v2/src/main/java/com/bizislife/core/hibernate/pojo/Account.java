@@ -238,7 +238,7 @@ public class Account extends UIDPojo{
 		return null;
 	}
 	
-	public Long removeEContact(ContactType contactType, String contactValue) {
+	public Long detachEContactFromAll(ContactType contactType, String contactValue) {
 		Long delId = null;
 		if (contactType!=null && contactValue!=null) {
 			Collection<EContact> eContacts = getEContacts();
@@ -272,7 +272,7 @@ public class Account extends UIDPojo{
 		return delId;
 	}
 	
-	public Long detachEcontact(ContactType contactType, String contactValue) {
+	public Long detachEcontactFromAccount(ContactType contactType, String contactValue) {
 		Long detachedId = null;
 		if (contactType!=null && contactValue!=null) {
 			Collection<EContact> eContacts = getEContacts();

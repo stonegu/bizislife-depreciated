@@ -28,6 +28,7 @@ import com.bizislife.core.hibernate.pojo.GpsLocation;
 import com.bizislife.core.hibernate.pojo.Group;
 import com.bizislife.core.hibernate.pojo.Organization;
 import com.bizislife.core.hibernate.pojo.Role;
+import com.bizislife.core.service.AccountService;
 
 @TransactionConfiguration(defaultRollback=true)
 @Transactional
@@ -37,6 +38,9 @@ public class TableCreationTest {
 	
 	@Autowired
 	private AccountJpaRepository accountJpaRepository;
+	
+	@Autowired
+	private AccountService accountService;
 	
 	@Autowired
 	private ContactlocationJpaRepository contactlocationJpaRepository;
@@ -581,7 +585,7 @@ public class TableCreationTest {
 	}
 	
 	@Test
-	public void removeAndDetachEcontact_fromAccount() {
+	public void detachEcontact_fromAccount() {
 		// create/update two econtact for user 'stonegu', these two econtacts have relationship with account and contactlocation
 		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
 		assertThat(1, is(accounts.size()));
@@ -621,7 +625,7 @@ public class TableCreationTest {
 		}
 		
 		// ***** time to detach ***************
-		stoneguAccount.detachEcontact(ContactType.Email, "stonegu@gmail.com");
+		stoneguAccount.detachEcontactFromAccount(ContactType.Email, "stonegu@gmail.com");
 		assertThat(2, is(stoneguAccount.getEContacts().size()));
 		EContact hotmailEconContact = stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com");
 		assertNotNull(hotmailEconContact);
@@ -632,7 +636,7 @@ public class TableCreationTest {
 		assertNotNull(hotmailEconContact.getAccount());
 		assertNotNull(hotmailEconContact.getContactLocation());
 		
-		// check orphanRemoval
+		// check detach
 		List<EContact> totalEContacts_beforeDel = eContactJpaRepository.findAll();
 		EContact stoneguAtgmailDOTcom = null;
 		if (totalEContacts_beforeDel!=null) {
@@ -643,16 +647,98 @@ public class TableCreationTest {
 			}
 		}
 		assertNotNull(stoneguAtgmailDOTcom);
+		assertNotNull(stoneguAtgmailDOTcom.getContactLocation());
+		assertNull(stoneguAtgmailDOTcom.getAccount());
 		
-		// ***** time to delete *************
-		stoneguAccount.removeEContact(ContactType.Email, "stonegu@gmail.com");
+		// ***** time to detach from all *************
+		stoneguAccount.detachEContactFromAll(ContactType.Email, "stonegu@gmail.com");
 		assertThat(1, is(stoneguAccount.getEContacts().size()));
 		assertNotNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com"));
 		assertNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@gmail.com"));
 		assertNotNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com").getAccount());
 		assertNotNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com").getContactLocation());
 
-		// check orphanRemoval
+		// check detach
+		List<EContact> totalEContacts_afterDel = eContactJpaRepository.findAll();
+		stoneguAtgmailDOTcom = null;
+		if (totalEContacts_afterDel!=null) {
+			for (EContact ec : totalEContacts_afterDel) {
+				if (ec.getContactValue().equals("stonegu@gmail.com")) {
+					stoneguAtgmailDOTcom = ec;
+				}
+			}
+		}
+		assertNotNull(stoneguAtgmailDOTcom);
+		assertNull(stoneguAtgmailDOTcom.getContactLocation());
+		assertNull(stoneguAtgmailDOTcom.getAccount());
+		
+	}
+	
+	@Test
+	public void delEcontactFromAccount() {
+		// create/update two econtact for user 'stonegu', these two econtacts have relationship with account and contactlocation
+		List<Account> accounts = accountJpaRepository.findByLoginname("stonegu");
+		assertThat(1, is(accounts.size()));
+		Account stoneguAccount = accounts.get(0);
+		assertThat("stonegu@hotmail.com", is(stoneguAccount.getEContacts().iterator().next().getContactValue()));
+		assertNotNull(stoneguAccount.getEContacts().iterator().next().getAccount());
+		assertNull(stoneguAccount.getEContacts().iterator().next().getContactLocation());
+		assertThat(1, is(stoneguAccount.getContactLocations().size()));
+		ContactLocation contactLocation = stoneguAccount.getContactLocations().iterator().next();
+		assertThat(null, is(contactLocation.getEContacts()));
+		// create relationship for 'stonegu@hotmail.com' with contactlocation
+		EContact eContact1 = new EContact();
+		eContact1.setContactType(ContactType.Email);
+		eContact1.setContactValue("stonegu@hotmail.com");
+		contactLocation.addEContact(eContact1);
+		contactlocationJpaRepository.save(contactLocation);
+		// make sure 'stonegu@hotmail.com' has relationship with contactlocation too
+		assertThat(1, is(stoneguAccount.getEContacts().size()));
+		assertNotNull(stoneguAccount.getEContacts().iterator().next().getContactLocation());
+		assertThat(true, is(stoneguAccount.getEContacts().iterator().next()==stoneguAccount.getContactLocations().iterator().next().getEContacts().iterator().next()));
+		
+		// add another econtact
+		EContact eContact2 = new EContact();
+		eContact2.setContactType(ContactType.Email);
+		eContact2.setContactValue("stonegu@gmail.com");
+		eContact2.setUid(UUID.randomUUID().toString());
+		contactLocation.addEContact(eContact2);
+		stoneguAccount.addEContact(eContact2);
+		accountJpaRepository.save(stoneguAccount);
+		assertThat(2, is(stoneguAccount.getEContacts().size()));
+		
+		// double check two econtacts have relationship with account and contactlocation
+		for (EContact eContact : stoneguAccount.getEContacts()) {
+			assertNotNull(eContact.getAccount());
+			assertNotNull(eContact.getContactLocation());
+			assertNotNull(eContact.getId());
+		}
+		
+		// check stonegu@gmail still there:
+		List<EContact> totalEContacts_beforeDel = eContactJpaRepository.findAll();
+		EContact stoneguAtgmailDOTcom = null;
+		if (totalEContacts_beforeDel!=null) {
+			for (EContact ec : totalEContacts_beforeDel) {
+				if (ec.getContactValue().equals("stonegu@gmail.com")) {
+					stoneguAtgmailDOTcom = ec;
+				}
+			}
+		}
+		assertNotNull(stoneguAtgmailDOTcom);
+		assertNotNull(stoneguAtgmailDOTcom.getContactLocation());
+		assertNotNull(stoneguAtgmailDOTcom.getAccount());
+		
+		
+		// ***** time to delete ***************
+		accountService.removeEContact(stoneguAccount.getUid(), ContactType.Email, "stonegu@gmail.com");
+		
+		assertThat(1, is(stoneguAccount.getEContacts().size()));
+		assertNotNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com"));
+		assertNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@gmail.com"));
+		assertNotNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com").getAccount());
+		assertNotNull(stoneguAccount.getEContact(ContactType.Email, "stonegu@hotmail.com").getContactLocation());
+
+		// check detach
 		List<EContact> totalEContacts_afterDel = eContactJpaRepository.findAll();
 		stoneguAtgmailDOTcom = null;
 		if (totalEContacts_afterDel!=null) {
@@ -663,7 +749,7 @@ public class TableCreationTest {
 			}
 		}
 		assertNull(stoneguAtgmailDOTcom);
-		
+
 	}
 	
 }

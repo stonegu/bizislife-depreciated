@@ -97,12 +97,6 @@ public class ContactLocation extends UIDPojo{
 		return null;
 	}
 	
-	/**
-	 * Not using removeEcontact but using detachEcontact for avoiding misleading, because econtact could have relationship with account.
-	 * 
-	 * @param contactType
-	 * @param contactValue
-	 */
 	public Long detachEcontact(ContactType contactType, String contactValue) {
 		Long detachedId = null;
 		if (contactType!=null && contactValue!=null) {
