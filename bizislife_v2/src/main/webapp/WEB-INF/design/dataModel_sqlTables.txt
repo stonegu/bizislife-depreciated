@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS account (
 id BIGINT NOT NULL AUTO_INCREMENT,
 uid VARCHAR(255) NOT NULL,
 loginname VARCHAR(255),
-pwd VARCHAR(50),
+pwd VARCHAR(80),
 firstname VARCHAR(100),
 lastname VARCHAR(100),
 preferlocale CHAR(3),

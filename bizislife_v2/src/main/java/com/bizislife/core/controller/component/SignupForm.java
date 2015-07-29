@@ -40,5 +40,10 @@ public class SignupForm implements Serializable{
 	public void setConfirmpwd(String confirmpwd) {
 		this.confirmpwd = confirmpwd;
 	}
+	@Override
+	public String toString() {
+		return "SignupForm [username=" + username + ", email=" + email
+				+ ", pwd=" + pwd + ", confirmpwd=" + confirmpwd + "]";
+	}
 	
 }

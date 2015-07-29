@@ -32,5 +32,11 @@ public class BizUser extends User{
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
+
+	@Override
+	public String toString() {
+		return "BizUser [firstname=" + firstname + ", lastname=" + lastname
+				+ ", User =" + super.toString() + "]";
+	}
 	
 }

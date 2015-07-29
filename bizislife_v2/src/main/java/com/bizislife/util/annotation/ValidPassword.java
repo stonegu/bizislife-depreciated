@@ -12,11 +12,11 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.bizislife.util.EmailValidator;
+import com.bizislife.util.PasswordValidator;
 
 @Target({ TYPE, FIELD, ANNOTATION_TYPE })
 @Retention(RUNTIME)
-@Constraint(validatedBy = EmailValidator.class)
+@Constraint(validatedBy = PasswordValidator.class)
 @Documented
 public @interface ValidPassword {
     String message() default "message.error.password.invalidate";
