@@ -27,7 +27,13 @@ public class MessageFromPropertiesService implements MessageSourceAware{
 	}
 	
 	public String getMessageByLocale(String code, Object[] args, Locale locale) {
-		return getMessageSource().getMessage(code, args, locale);
+		// should determine if code is code:
+		if (code.trim().startsWith("message.")) {
+			return getMessageSource().getMessage(code, args, locale==null?Locale.ENGLISH: locale);
+		} else {
+			return code;
+		}
+		
 	}
 
 }

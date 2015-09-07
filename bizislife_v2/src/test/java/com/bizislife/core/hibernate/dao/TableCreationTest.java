@@ -409,7 +409,7 @@ public class TableCreationTest {
 		
 		List<Role> savedRoles = roleJpaRepository.findAll();
 		assertNotNull(savedRoles);
-		assertThat(3, is(savedRoles.size()));
+		assertThat(4, is(savedRoles.size())); // there should include default general role 
 		
 		List<ContactLocation> savedContactLocations = contactlocationJpaRepository.findAll();
 		assertNotNull(savedContactLocations);

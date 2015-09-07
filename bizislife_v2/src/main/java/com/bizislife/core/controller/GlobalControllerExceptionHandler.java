@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import com.bizislife.core.controller.GlobalControllerExceptionHandler.RestExceptionResponse;
+import com.bizislife.core.exception.BizisLifeBaseException;
+import com.bizislife.core.exception.NoUserCreate;
 import com.bizislife.core.service.MessageFromPropertiesService;
 
 import java.io.Serializable;
@@ -23,38 +25,36 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	
     public static class RestExceptionResponse implements Serializable {
 		private static final long serialVersionUID = -8381807732540995931L;
-		private Boolean success;
+		private int reason = -1;
         private List<String> messages;
         private Object data;
 
-        public RestExceptionResponse(Boolean success, Object data, List<String> messages) {
-            this.success = success;
+        public RestExceptionResponse(Object data, int reason, List<String> messages) {
             this.messages = messages;
             this.data = data;
+            if (reason>-1) {
+            	this.reason = reason;
+            }
         }
 
-        public RestExceptionResponse(Boolean success, Object data, String... messages) {
-            this.success = success;
+        public RestExceptionResponse(Object data, int reason, String... messages) {
             this.data = data;
             if (messages!=null && messages.length>0) {
                 this.messages = Arrays.asList(messages);
             }
+            if (reason>-1) {
+            	this.reason = reason;
+            }
         }
 
-        public RestExceptionResponse(Boolean success, Object data, String message) {
-            this.success = success;
+        public RestExceptionResponse(Object data, int reason, String message) {
             this.data = data;
             if (message!=null) {
                 messages = Collections.singletonList(message);
             }
-        }
-
-        public Boolean getSuccess() {
-            return success;
-        }
-
-        public void setSuccess(Boolean success) {
-            this.success = success;
+            if (reason>-1) {
+            	this.reason = reason;
+            }
         }
 
         public List<String> getMessages() {
@@ -72,6 +72,15 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
         public void setData(Object data) {
             this.data = data;
         }
+
+		public int getReason() {
+			return reason;
+		}
+
+		public void setReason(int reason) {
+			this.reason = reason;
+		}
+        
     }
 
 	@Autowired
@@ -79,10 +88,22 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 
     @ExceptionHandler(value = { Exception.class })
     protected ResponseEntity<RestExceptionResponse> handleUnknownException(Exception ex, WebRequest request) {
-        logger.error(ex.getMessage(), ex);
-
-        return new ResponseEntity<RestExceptionResponse>(new RestExceptionResponse(Boolean.FALSE, null, messageService.getMessageByLocale("message.error.default", null, Locale.ENGLISH)), HttpStatus.INTERNAL_SERVER_ERROR);
+        logger.error(ex.toString(), ex);
+        return new ResponseEntity(new RestExceptionResponse(ex, -1, ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
+    @ExceptionHandler(value = { BizisLifeBaseException.class })
+    protected ResponseEntity<RestExceptionResponse> noUserException(BizisLifeBaseException ex, WebRequest request) {
+        logger.error(ex.toString(), ex);
+        if (ex.getMessages()!=null && ex.getMessages().size()>0) {
+            return new ResponseEntity(new RestExceptionResponse(ex, ex.getReason(), ex.getMessages()), HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+        	return new ResponseEntity(new RestExceptionResponse(ex, ex.getReason(), ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
+    }
+    
+    
 
 	
 

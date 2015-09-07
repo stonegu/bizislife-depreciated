@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS account (
 id BIGINT NOT NULL AUTO_INCREMENT,
 uid VARCHAR(255) NOT NULL,
 loginname VARCHAR(255),
-pwd VARCHAR(80),
+pwd VARCHAR(60),
 firstname VARCHAR(100),
 lastname VARCHAR(100),
 preferlocale CHAR(3),
@@ -66,6 +66,7 @@ CONSTRAINT fk_ag_group FOREIGN KEY (gid) REFERENCES agroup (id)
 CREATE TABLE IF NOT EXISTS role (
 id BIGINT NOT NULL AUTO_INCREMENT,
 uid VARCHAR(255) NOT NULL,
+orguid VARCHAR(255),
 rname VARCHAR(255),
 description TEXT,
 INDEX uid (uid),
@@ -133,3 +134,15 @@ CONSTRAINT fk_oe_organization FOREIGN KEY (organizationid) REFERENCES organizati
 INDEX uid (uid),
 PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+
+#######################################################
+# initiate DB for root account
+#######################################################
+
+# insert a general role for all orgs
+INSERT INTO bizislife.role (id, uid, orguid, rname, description)
+VALUES (NULL, (SELECT MD5(UUID())), NULL, 'GENERAL', 'This the the basic role, which will auto apply to any account during account generation.');
+
+
+

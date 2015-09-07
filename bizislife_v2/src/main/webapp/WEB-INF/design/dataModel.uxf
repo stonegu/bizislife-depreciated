@@ -58,12 +58,13 @@ m2=0..n
       <x>150</x>
       <y>390</y>
       <w>210</w>
-      <h>100</h>
+      <h>120</h>
     </coordinates>
     <panel_attributes>Role
 --
 -id: Long
 -uid: String
+-orguid: String
 -rname: String
 -description: String</panel_attributes>
     <additional_attributes/>

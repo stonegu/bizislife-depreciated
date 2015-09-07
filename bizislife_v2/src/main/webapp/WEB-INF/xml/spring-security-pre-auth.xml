@@ -29,10 +29,17 @@
 		<beans:property name="checkForPrincipalChanges" value="true"></beans:property>
 		<beans:property name="authenticationManager" ref="authenticationManager" />
 	</beans:bean>
- 	
-	
+<!--  	
+ 	<beans:bean id="encodr" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+ 		<beans:constructor-arg name="strength" value="11" />
+ 	</beans:bean>
+ -->	
 	<authentication-manager alias="authenticationManager">
-		<authentication-provider ref="preauthAuthProvider" />
+		<authentication-provider ref="preauthAuthProvider">
+<!-- 		
+			<password-encoder ref="encoder" />
+ -->		
+		</authentication-provider>
 	</authentication-manager>
 	<beans:bean id="preauthAuthProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
 		<beans:property name="preAuthenticatedUserDetailsService">

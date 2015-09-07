@@ -33,10 +33,22 @@
 	<resources mapping="**/*.txt" location="/" />
 	<resources mapping="**/*.html" location="/" />
 	<resources mapping="**/*.zip" location="/" />
+	<resources mapping="**/*.eot" location="/" />
+	<resources mapping="**/*.svg" location="/" />
+	<resources mapping="**/*.ttf" location="/" />
+	<resources mapping="**/*.woff" location="/" />
+	<resources mapping="**/*.woff2" location="/" />
+	<resources mapping="**/*.otf" location="/" />
+	<resources mapping="**/*.less" location="/" />
+	<resources mapping="**/*.scss" location="/" />
+
+
+
+
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<beans:property name="prefix" value="/WEB-INF/view/" />
+		<beans:property name="prefix" value="/WEB-INF/pages/" />
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 

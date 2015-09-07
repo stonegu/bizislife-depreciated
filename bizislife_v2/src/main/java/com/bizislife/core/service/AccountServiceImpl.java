@@ -10,11 +10,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bizislife.core.controller.component.SignupForm;
+import com.bizislife.core.exception.BizisLifeBaseException;
+import com.bizislife.core.exception.NoUserCreate;
 import com.bizislife.core.hibernate.dao.AccountJpaRepository;
 import com.bizislife.core.hibernate.dao.EContactJpaRepository;
+import com.bizislife.core.hibernate.dao.RoleJpaRepository;
 import com.bizislife.core.hibernate.pojo.Account;
 import com.bizislife.core.hibernate.pojo.EContact;
 import com.bizislife.core.hibernate.pojo.EContact.ContactType;
+import com.bizislife.core.hibernate.pojo.Role;
 import com.bizislife.core.service.component.BizUser;
 
 @Service
@@ -25,6 +29,16 @@ public class AccountServiceImpl implements AccountService{
 	
 	@Autowired
 	EContactJpaRepository eContactJpaRepository;
+	
+	@Autowired
+	private MessageFromPropertiesService messageService;
+	
+	@Autowired
+	private RoleJpaRepository roleJpaRepository;
+	
+	@Autowired
+	private UserDetailService userDetailService;
+
 
 	@Transactional(readOnly=true)
 	public User getLoginAccount() {
@@ -47,32 +61,48 @@ public class AccountServiceImpl implements AccountService{
 
 	@Override
 	@Transactional
-	public User signup(SignupForm signupForm) {
+	public User signup(SignupForm signupForm) throws BizisLifeBaseException {
 		User bizUser = null;
 		
 		if (signupForm!=null) {
-			Account accountRegist = new Account();
-			accountRegist.setLoginname(signupForm.getUsername());
-			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-			String hashedPassword = passwordEncoder.encode(signupForm.getPwd());
-			accountRegist.setPwd(hashedPassword);
 			
-			EContact eContact = new EContact();
-			eContact.setAccount(accountRegist);
-			eContact.setContactType(ContactType.Email);
-			eContact.setContactValue(signupForm.getEmail());
+			// check username existence
+			List<Account> accountsWithSameLoginName = accountJpaRepository.findByLoginname(signupForm.getUsername());
 			
-			accountRegist.addEContact(eContact);
-			
-			accountRegist = accountJpaRepository.save(accountRegist);
-			
-			if (accountRegist!=null && accountRegist.getId()!=null) {
-				bizUser = new BizUser(accountRegist.getLoginname(), null, null, null, null);
+			if (accountsWithSameLoginName==null || accountsWithSameLoginName.size()==0) {
+				// get 'general' role
+				List<Role> generalRoles = roleJpaRepository.findByNameAndOrgUid("GENERAL", null);
+				if (generalRoles==null || generalRoles.size()==0)
+					throw new BizisLifeBaseException(BizisLifeBaseException.NO_GENERAL_ROLE, messageService.getMessageByLocale("message.error.role.general.nofound", null, null));
+				
+				Account accountRegist = new Account();
+				accountRegist.addRole(generalRoles.get(0));
+				
+				accountRegist.setLoginname(signupForm.getUsername());
+				BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+				String hashedPassword = passwordEncoder.encode(signupForm.getPwd());
+				accountRegist.setPwd(hashedPassword);
+				
+				EContact eContact = new EContact();
+				eContact.setAccount(accountRegist);
+				eContact.setContactType(ContactType.Email);
+				eContact.setContactValue(signupForm.getEmail());
+				
+				accountRegist.addEContact(eContact);
+				
+				accountRegist = accountJpaRepository.save(accountRegist);
+				
+				if (accountRegist!=null && accountRegist.getId()!=null) {
+					bizUser = new BizUser(accountRegist.getLoginname(), hashedPassword, userDetailService.getGrantedAuthorities(generalRoles.get(0)), null, null);
+				}
+			} else {
+				throw new BizisLifeBaseException(BizisLifeBaseException.SIGNUP_USERNAME_EXIST, messageService.getMessageByLocale("message.error.signup.username.exist", new String[]{signupForm.getUsername()}, null));
 			}
-			
 		}
 		
-		return bizUser;
+		if (bizUser!=null) return bizUser;
+		else throw new BizisLifeBaseException(BizisLifeBaseException.SIGNUP_USER_CREATION_ERROR, 
+				messageService.getMessageByLocale("message.error.signup.nouser.created", null, null));
 	}
 
 }

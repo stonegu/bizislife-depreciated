@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -24,6 +26,8 @@ import com.bizislife.core.controller.component.ApiResponse;
 import com.bizislife.core.controller.component.ConstantKey;
 import com.bizislife.core.controller.component.SignupForm;
 import com.bizislife.core.event.OnRegistrationCompleteEvent;
+import com.bizislife.core.exception.BizisLifeBaseException;
+import com.bizislife.core.exception.NoUserCreate;
 import com.bizislife.core.hibernate.pojo.Account;
 import com.bizislife.core.service.AccountService;
 import com.bizislife.core.service.MessageFromPropertiesService;
@@ -45,13 +49,12 @@ public class SignController {
 	private MessageFromPropertiesService messageService;
 	
     @RequestMapping(value="/signup", method=RequestMethod.POST, consumes = "application/json")
-    public @ResponseBody ApiResponse signup(HttpSession session,
+    public @ResponseBody ResponseEntity<User> signup(HttpSession session,
             @Valid @RequestBody final SignupForm signupForm, BindingResult result
-            ) {
+            ) throws BizisLifeBaseException {
     	
     	logger.info("--- signup - " + signupForm);
     	
-    	ApiResponse apires = new ApiResponse();
     	if (!result.hasErrors()) {
     		
     		User signupUser = accountService.signup(signupForm);
@@ -59,30 +62,26 @@ public class SignController {
     		if (signupUser!=null) {
     			// TODO: add to session
 //    			session.setAttribute(ConstantKey.SessionAttributeKey.CONTEXT, signupUser);
-    			apires.setResponse1(signupUser);
-        		apires.setSuccess(true);
-        		
-        		logger.info("--- signup - signupUser: " + signupUser);
+    			
+    			return new ResponseEntity<User>(signupUser, HttpStatus.OK);
     		} else {
-        		apires.setSuccess(false);
-        		apires.setResponse1(messageService.getMessageByLocale("message.error.user.signup", null, Locale.US));
+    			throw new BizisLifeBaseException(BizisLifeBaseException.SIGNUP_USER_CREATION_ERROR, 
+    					messageService.getMessageByLocale("message.error.signup.nouser.created", null, Locale.ENGLISH));
     		}
+    		
     	} else {
-    		apires.setSuccess(false);
     		List<String> errors = new ArrayList<>();
     		for (ObjectError oe : result.getAllErrors()) {
-    			errors.add(messageService.getMessageByLocale(oe.getDefaultMessage(), null, Locale.US));
+    			errors.add(messageService.getMessageByLocale(oe.getDefaultMessage(), null, Locale.ENGLISH));
     		}
-    		apires.setResponse1(errors);
-    		logger.error("--- signup - " + errors.toString());
+    		throw new BizisLifeBaseException(BizisLifeBaseException.SIGNUP_FORM_ERROR, 
+    				errors);
     	}
     	
     	// test publish event:
-    	Account account = new Account();
-    	account.setFirstname("StoneGu");
-    	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(account, null, null));
-    	
-    	return apires;
+//    	Account account = new Account();
+//    	account.setFirstname("StoneGu");
+//    	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(account, null, null));
     	
     }
 

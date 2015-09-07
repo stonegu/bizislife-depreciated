@@ -15,6 +15,9 @@ public class Role extends UIDPojo{
 	
 	@Column(name="description")
 	private String description;
+	
+	@Column(name="orguid")
+	private String orgUid;
 
 	public Role() {
 		this.uid = UUID.randomUUID().toString();
@@ -34,6 +37,14 @@ public class Role extends UIDPojo{
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getOrgUid() {
+		return orgUid;
+	}
+
+	public void setOrgUid(String orgUid) {
+		this.orgUid = orgUid;
 	}
 
 	@Override

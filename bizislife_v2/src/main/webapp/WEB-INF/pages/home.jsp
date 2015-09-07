@@ -721,7 +721,7 @@
 					                                    <input type="email" class="form-control" ng-model="signupform.email" placeholder="Email Address" id="email_signup" required>
 					                                </div>
 					                                <div class="form-group">
-					                                    <input type="password" class="form-control" ng-model="signupform.pwd" placeholder="Password" id="password_signup" required ng-minlength="10">
+					                                    <input type="password" class="form-control" ng-model="signupform.pwd" placeholder="Password" id="password_signup" required ng-minlength="8" ng-maxlength="10">
 					                                </div>
 					                                <div class="form-group">
 					                                    <input type="password" class="form-control" ng-model="signupform.confirmpwd" placeholder="Confirm Password" id="confirmpassword_signup" required ng-fab-match="signupform.pwd">
