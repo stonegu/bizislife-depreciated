@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        ">
+
+    <!-- for apache activemq -->
+    <beans:bean id="mqConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+        <beans:property name="connectionFactory">
+            <beans:bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <beans:property name="brokerURL">
+                    <beans:value>${jms.brokerUrl}</beans:value>
+                </beans:property>
+            </beans:bean>
+        </beans:property>
+        <beans:property name="maxConnections" value="${jms.pool.maxConnections}" />
+    </beans:bean>
+
+    <beans:bean id="mqCachedConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+        <beans:property name="targetConnectionFactory" ref="mqConnectionFactory"/>
+        <beans:property name="reconnectOnException" value="true" />
+        <beans:property name="exceptionListener" ref="mqExceptionListener" />
+        <beans:property name="sessionCacheSize">
+            <beans:value>${jms.sessionCacheSize}</beans:value>
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean id="mqExceptionListener" class="com.bizislife.core.listener.JmsExceptionListener">
+        <beans:property name="cachingConnectionFactory" ref="mqCachedConnectionFactory" />
+    </beans:bean>
+
+    <beans:bean id="emailQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <beans:constructor-arg>
+            <beans:value>emailQueue_${jms.appDomainName}</beans:value>
+        </beans:constructor-arg>
+    </beans:bean>
+
+    <beans:bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <beans:property name="connectionFactory" ref="mqCachedConnectionFactory" />
+        <beans:property name="deliveryMode" value="2" />
+        <beans:property name="sessionAcknowledgeMode" value="2" />
+        <beans:property name="explicitQosEnabled" value="true" />
+    </beans:bean>
+    <beans:bean id="jmsMessageSender" class="com.bizislife.core.service.JmsMessageSender">
+        <beans:property name="jmsTemplate" ref="jmsTemplate"></beans:property>
+    </beans:bean>
+
+    <beans:bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
+        <!-- can also refer to amq.connectionFactory -->
+        <beans:property name="connectionFactory" ref="mqCachedConnectionFactory" />
+    </beans:bean>
+
+    <beans:bean id="emailMessageListener" class="com.bizislife.core.listener.EmailMessageListener"/>
+	<beans:bean id="emailMessageListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<beans:property name="concurrentConsumers" value="1" />
+        <beans:property name="connectionFactory" ref="mqCachedConnectionFactory" />
+        <beans:property name="destination" ref="emailQueue" />
+        <beans:property name="messageListener" ref="emailMessageListener" />
+        <beans:property name="sessionTransacted" value="true" />
+        <beans:property name="transactionManager" ref="jmsTransactionManager" />
+    </beans:bean>
+
+</beans:beans>
