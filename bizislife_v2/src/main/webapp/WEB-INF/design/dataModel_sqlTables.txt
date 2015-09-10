@@ -135,13 +135,31 @@ INDEX uid (uid),
 PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
+#######################################################
+CREATE TABLE IF NOT EXISTS bizactionlog (
+id BIGINT NOT NULL AUTO_INCREMENT,
+uid VARCHAR(255) NOT NULL,
+route VARCHAR(255) NOT NULL,
+datecreated datetime NOT NULL,
+logType varchar(31) NOT NULL,
+ip VARCHAR(20) DEFAULT NULL,
+dateLogout datetime DEFAULT NULL,
+logoutType VARCHAR(30) DEFAULT NULL,
+accountid BIGINT DEFAULT NULL,
+INDEX fk_al_account (accountid),
+CONSTRAINT fk_al_account FOREIGN KEY (accountid) REFERENCES account (id),
+INDEX uid (uid),
+PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+
 
 #######################################################
-# initiate DB for root account
+# initiate DB 
 #######################################################
 
 # insert a general role for all orgs
-INSERT INTO bizislife.role (id, uid, orguid, rname, description)
+INSERT INTO role (id, uid, orguid, rname, description)
 VALUES (NULL, (SELECT MD5(UUID())), NULL, 'GENERAL', 'This the the basic role, which will auto apply to any account during account generation.');
 
 
