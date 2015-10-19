@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.jms.JMSException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.activemq.command.ActiveMQMapMessage;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.bizislife.core.controller.component.ApiResponse;
-import com.bizislife.core.controller.component.ConstantKey;
 import com.bizislife.core.controller.component.SignupForm;
-import com.bizislife.core.event.OnRegistrationCompleteEvent;
 import com.bizislife.core.exception.BizisLifeBaseException;
-import com.bizislife.core.exception.NoUserCreate;
-import com.bizislife.core.hibernate.pojo.Account;
 import com.bizislife.core.service.AccountService;
+import com.bizislife.core.service.JmsMessageSender;
+import com.bizislife.core.service.JmsService;
 import com.bizislife.core.service.MessageFromPropertiesService;
 import com.bizislife.util.annotation.PublicPage;
 
@@ -41,17 +41,23 @@ public class SignController {
 	
 	@Autowired
 	private AccountService accountService;
+	
+    @Autowired
+    private ActiveMQQueue emailQueue;
 
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 	
 	@Autowired
 	private MessageFromPropertiesService messageService;
-	
+
+    @Autowired
+    private JmsService jmsService;
+    
     @RequestMapping(value="/signup", method=RequestMethod.POST, consumes = "application/json")
     public @ResponseBody ResponseEntity<User> signup(HttpSession session,
             @Valid @RequestBody final SignupForm signupForm, BindingResult result
-            ) throws BizisLifeBaseException {
+            ) throws BizisLifeBaseException, JMSException {
     	
     	logger.info("--- signup - " + signupForm);
     	
@@ -62,6 +68,11 @@ public class SignController {
     		if (signupUser!=null) {
     			// TODO: add to session
 //    			session.setAttribute(ConstantKey.SessionAttributeKey.CONTEXT, signupUser);
+    			
+    			
+    			jmsService.signUpEmailSend(signupUser);
+    			
+    			
     			
     			return new ResponseEntity<User>(signupUser, HttpStatus.OK);
     		} else {

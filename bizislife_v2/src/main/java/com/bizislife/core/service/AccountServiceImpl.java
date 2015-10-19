@@ -71,7 +71,7 @@ public class AccountServiceImpl implements AccountService{
 			
 			if (accountsWithSameLoginName==null || accountsWithSameLoginName.size()==0) {
 				// get 'general' role
-				List<Role> generalRoles = roleJpaRepository.findByNameAndOrgUid("GENERAL", null);
+				List<Role> generalRoles = roleJpaRepository.findByNameAndOrgUid(Role.PredefinedRoles.GENERAL.name(), null);
 				if (generalRoles==null || generalRoles.size()==0)
 					throw new BizisLifeBaseException(BizisLifeBaseException.NO_GENERAL_ROLE, messageService.getMessageByLocale("message.error.role.general.nofound", null, null));
 				
@@ -100,7 +100,11 @@ public class AccountServiceImpl implements AccountService{
 			}
 		}
 		
-		if (bizUser!=null) return bizUser;
+		if (bizUser!=null) {
+			// TODO: create action log!
+			
+			return bizUser;
+		}
 		else throw new BizisLifeBaseException(BizisLifeBaseException.SIGNUP_USER_CREATION_ERROR, 
 				messageService.getMessageByLocale("message.error.signup.nouser.created", null, null));
 	}

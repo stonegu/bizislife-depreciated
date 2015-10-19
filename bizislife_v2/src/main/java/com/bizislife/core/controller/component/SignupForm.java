@@ -1,6 +1,7 @@
 package com.bizislife.core.controller.component;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import com.bizislife.util.annotation.ValidEmail;
 import com.bizislife.util.annotation.ValidPassword;
@@ -15,6 +16,7 @@ public class SignupForm implements Serializable{
 	@ValidPassword
 	private String pwd;
 	private String confirmpwd;
+	private String locale;
 	
 	public String getUsername() {
 		return username;
@@ -39,6 +41,12 @@ public class SignupForm implements Serializable{
 	}
 	public void setConfirmpwd(String confirmpwd) {
 		this.confirmpwd = confirmpwd;
+	}
+	public String getLocale() {
+		return locale==null?Locale.ENGLISH.getLanguage():locale;
+	}
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 	@Override
 	public String toString() {

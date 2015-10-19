@@ -6,6 +6,13 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         ">
+        
+<!--         
+    <beans:bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    	<beans:property name="resourceLoaderPath" value="/WEB-INF/pages/template/velocity/" />
+    </beans:bean>
+ -->        
+        
 
     <!-- for apache activemq -->
     <beans:bean id="mqConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
@@ -53,7 +60,9 @@
         <beans:property name="connectionFactory" ref="mqCachedConnectionFactory" />
     </beans:bean>
 
-    <beans:bean id="emailMessageListener" class="com.bizislife.core.listener.EmailMessageListener"/>
+    <beans:bean id="emailMessageListener" class="com.bizislife.core.listener.EmailMessageListener">
+    	<beans:property name="velocityEngine" ref="velocityEngine"></beans:property>
+    </beans:bean>
 	<beans:bean id="emailMessageListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
 		<beans:property name="concurrentConsumers" value="1" />
         <beans:property name="connectionFactory" ref="mqCachedConnectionFactory" />

@@ -9,6 +9,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name="role")
 public class Role extends UIDPojo{
+	
+	public static enum PredefinedRoles {
+		GENERAL, // this is the role for all users
+	}
 
 	@Column(name="rname")
 	private String name;

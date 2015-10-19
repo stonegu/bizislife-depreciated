@@ -1,10 +1,13 @@
 package com.bizislife.core.hibernate.pojo;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -195,6 +198,28 @@ public class Account extends UIDPojo{
 					}
 				}
 			}
+		}
+		return null;
+	}
+	
+	public Map<ContactType, Set<EContact>> getEmails() {
+		Collection<EContact> eContacts = getEContacts();
+		if (eContacts!=null && eContacts.size()>0) {
+			Map<ContactType, Set<EContact>> results = new HashMap<EContact.ContactType, Set<EContact>>();
+			Iterator<EContact> iterator = eContacts.iterator();
+			while (iterator.hasNext()) {
+				EContact eContact = iterator.next();
+				if (eContact.getContactType().getCode().toLowerCase().indexOf("email")>-1) {
+					if (results.get(eContact.getContactType())==null) {
+						Set<EContact> ecs = new HashSet<>();
+						ecs.add(eContact);
+						results.put(eContact.getContactType(), ecs);
+					} else {
+						results.get(eContact.getContactType()).add(eContact);
+					}
+				}
+			}
+			return results;
 		}
 		return null;
 	}

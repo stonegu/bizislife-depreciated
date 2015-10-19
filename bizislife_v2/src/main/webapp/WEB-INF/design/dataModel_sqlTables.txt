@@ -150,12 +150,25 @@ INDEX fk_al_account (accountid),
 CONSTRAINT fk_al_account FOREIGN KEY (accountid) REFERENCES account (id),
 INDEX uid (uid),
 PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+#######################################################
+CREATE TABLE IF NOT EXISTS usertoken (
+id BIGINT NOT NULL AUTO_INCREMENT,
+uid VARCHAR(255) NOT NULL,
+token VARCHAR(255) NOT NULL,
+expirydate datetime NOT NULL,
+tokenType varchar(31) NOT NULL,
+accountid BIGINT DEFAULT NULL,
+INDEX fk_ut_account (accountid),
+CONSTRAINT fk_ut_account FOREIGN KEY (accountid) REFERENCES account (id),
+INDEX uid (uid),
+PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #######################################################
 # initiate DB 
+# Note: run after table creation!!
 #######################################################
 
 # insert a general role for all orgs
