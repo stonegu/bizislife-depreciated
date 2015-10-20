@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.jms.JMSException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.bizislife.core.configuration.ApplicationConfiguration;
 import com.bizislife.core.controller.component.SignupForm;
 import com.bizislife.core.exception.BizisLifeBaseException;
 import com.bizislife.core.service.AccountService;
@@ -44,7 +46,7 @@ public class SignController {
 	
     @Autowired
     private ActiveMQQueue emailQueue;
-
+    
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 	
@@ -55,7 +57,7 @@ public class SignController {
     private JmsService jmsService;
     
     @RequestMapping(value="/signup", method=RequestMethod.POST, consumes = "application/json")
-    public @ResponseBody ResponseEntity<User> signup(HttpSession session,
+    public @ResponseBody ResponseEntity<User> signup(HttpSession session, HttpServletRequest req,
             @Valid @RequestBody final SignupForm signupForm, BindingResult result
             ) throws BizisLifeBaseException, JMSException {
     	
@@ -63,7 +65,7 @@ public class SignController {
     	
     	if (!result.hasErrors()) {
     		
-    		User signupUser = accountService.signup(signupForm);
+    		User signupUser = accountService.signup(signupForm, req);
     		
     		if (signupUser!=null) {
     			// TODO: add to session

@@ -1,0 +1,11 @@
+<div>
+	<p>Dear ${username}</p>
+	<p>Thanks for joining <a href="www.bizislife.com">Bizislife!</a></p>
+	<p>Just one more step: <a href="${signupConfirmLink}">Please click here to confirm your signup.</a></p>
+	<p>Bizislife members enjoy the following features:</p>
+	<ul>
+		<li>1. </li>
+		<li>2. </li>
+	</ul>
+	<p>- The Bizislife Team</p>
+</div>

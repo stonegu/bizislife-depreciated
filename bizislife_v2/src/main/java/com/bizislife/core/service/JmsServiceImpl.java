@@ -57,6 +57,9 @@ public class JmsServiceImpl implements JmsService {
 					msg.setString("type", EmailMessageListener.EmailType.signup.name());
 					msg.setString("token", token);
 					msg.setString("sendTo", sendToEmail.getContactValue());
+					msg.setString("username", user.getUsername());
+//					msg.setString("firstname", ((BizUser)user).getFirstname());
+//					msg.setString("lastname", ((BizUser)user).getLastname());
 					
 					jmsMessageSender.send(mqQueue, msg);
 				} else {

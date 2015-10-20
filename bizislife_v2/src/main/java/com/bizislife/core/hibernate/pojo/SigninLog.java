@@ -48,7 +48,7 @@ public class SigninLog extends BizActionLog{
 	}
 	
 	public static enum LogoutType {
-		signout, timeout, exception
+		signout, timeout, other
 	}
 	
 }

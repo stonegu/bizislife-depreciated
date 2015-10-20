@@ -11,6 +11,8 @@ import javax.jms.MessageListener;
 
 import org.apache.activemq.command.ActiveMQMapMessage;
 import org.apache.velocity.app.VelocityEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
@@ -24,107 +26,92 @@ import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
+import com.bizislife.core.configuration.ApplicationConfiguration;
 
-public class EmailMessageListener  implements MessageListener {
+public class EmailMessageListener implements MessageListener {
+	private static final Logger logger = LoggerFactory.getLogger(EmailMessageListener.class);
 	
     public static enum EmailType {
     	signup
     }
     
-    private VelocityEngine velocityEngine;
+    @Autowired
+    private ApplicationConfiguration applicationConfiguration;
     
+    private VelocityEngine velocityEngine;
 	public void setVelocityEngine(VelocityEngine velocityEngine) {
 		this.velocityEngine = velocityEngine;
 	}
 
-	private String from = null;
-	private List<String> to = new ArrayList<>();
-	private String body = null;
-	private String subject = null;
-
 	@Override
 	public void onMessage(Message message) {
+		
+		String from = null;
+		List<String> to = new ArrayList<>();
+		String body = null;
+		String subject = null;
+
+		
 		final ActiveMQMapMessage mapMessage = (ActiveMQMapMessage) message;
 		
 		try {
 			EmailType emailtype = EmailType.valueOf(mapMessage.getString("type"));
 			if (emailtype==EmailType.signup) {
-				from = "info@bizislife.com";
 				String sendto = mapMessage.getString("sendTo");
 				String token = mapMessage.getString("token");
+				String username = mapMessage.getString("username");
+				from = "info@bizislife.com";
 				
-				Map<String, Object> model = new HashMap<String, Object>();
-				model.put("firstName", "stone");
-				model.put("lastName", "gu");
 				
 				if (sendto!=null && token!=null) {
 					to.add(sendto);
+					
+					String signupConfirmLink = generateSignupConfirmLink(token);
+					
+					Map<String, Object> model = new HashMap<String, Object>();
+					model.put("username", username);
+					model.put("signupConfirmLink", signupConfirmLink);
+					
+					String vmFileLocation = "/email/emailSignup.vm";
+					
 					// get body from velocity template:
-					body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "/email/emailtest.vm", "UTF-8", model);
-					subject = "this is test subject";
-					
-					SendEmailResult sendEmailResult = null;
-					
+					body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, vmFileLocation, "UTF-8", model);
+					subject = "Welcome to Bizislife";
+
 			        // Construct an object to contain the recipient address.
-			        Destination destination = new Destination().withToAddresses(to.toArray(new String[0]));
+			        Destination theDestination = new Destination().withToAddresses(to.toArray(new String[0]));
 
 			        // Create the subject and body of the message.
 			        Content theSubject = new Content().withData(subject);
-			        Content textBody = new Content().withData(body);
-			        Body body = new Body().withHtml(textBody);
+			        Content theTextBody = new Content().withData(body);
+			        Body theBody = new Body().withHtml(theTextBody);
 
 			        // Create a message with the specified subject and body.
-			        com.amazonaws.services.simpleemail.model.Message theMessage = new com.amazonaws.services.simpleemail.model.Message().withSubject(theSubject).withBody(body);
+			        com.amazonaws.services.simpleemail.model.Message theMessage = new com.amazonaws.services.simpleemail.model.Message().withSubject(theSubject).withBody(theBody);
 
 			        // Assemble the email.
-			        SendEmailRequest request = new SendEmailRequest().withSource(from).withDestination(destination).withMessage(theMessage);
+			        SendEmailRequest request = new SendEmailRequest().withSource(from).withDestination(theDestination).withMessage(theMessage);
 
 			        try {
-			            System.out.println("Attempting to send an email through Amazon SES by using the AWS SDK for Java...");
-
-			            /*
-			             * The ProfileCredentialsProvider will return your [default]
-			             * credential profile by reading from the credentials file located at
-			             * (~/.aws/credentials).
-			             *
-			             * TransferManager manages a pool of threads, so we create a
-			             * single instance and share it throughout our application.
-			             */
-//			            AWSCredentials credentials = null;
-//			            try {
-//			                credentials = new ProfileCredentialsProvider().getCredentials();
-//			            } catch (Exception e) {
-//			                throw new AmazonClientException(
-//			                        "Cannot load the credentials from the credential profiles file. " +
-//			                        "Please make sure that your credentials file is at the correct " +
-//			                        "location (~/.aws/credentials), and is in valid format.",
-//			                        e);
-//			            }
-			            
 			            AWSCredentials credentials = new ClasspathPropertiesFileCredentialsProvider().getCredentials();
-
 			            // Instantiate an Amazon SES client, which will make the service call with the supplied AWS credentials.
 			            AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient(credentials);
-
-			            // Choose the AWS region of the Amazon SES endpoint you want to connect to. Note that your production
-			            // access status, sending limits, and Amazon SES identity-related settings are specific to a given
-			            // AWS region, so be sure to select an AWS region in which you set up Amazon SES. Here, we are using
-			            // the US East (N. Virginia) region. Examples of other regions that Amazon SES supports are US_WEST_2
-			            // and EU_WEST_1. For a complete list, see http://docs.aws.amazon.com/ses/latest/DeveloperGuide/regions.html
 			            Region REGION = Region.getRegion(Regions.US_EAST_1);
 			            client.setRegion(REGION);
 
 			            // Send the email.
-			            sendEmailResult = client.sendEmail(request);
+			            SendEmailResult sendEmailResult = client.sendEmail(request);
 			            System.out.println("Email sent!");
+			            
+			            // create a log
 
 			        } catch (Exception ex) {
 			            System.out.println("The email was not sent.");
 			            System.out.println("Error message: " + ex.getMessage());
-			        }		
-			        					
-					
-					
+			        }
+			        
+				} else {
+					logger.error("sendto & token can't be null");
 				}
 			}
 			
@@ -134,4 +121,12 @@ public class EmailMessageListener  implements MessageListener {
 			e.printStackTrace();
 		}
 	}
+	
+	private String generateSignupConfirmLink(String token) {
+		StringBuilder link = new StringBuilder();
+		link.append(applicationConfiguration.getHostName());
+		link.append("/sign/regitrationConfirm/").append(token);
+		return link.toString();
+	}
+	
 }

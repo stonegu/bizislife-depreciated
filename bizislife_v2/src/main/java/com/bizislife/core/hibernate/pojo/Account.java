@@ -1,6 +1,7 @@
 package com.bizislife.core.hibernate.pojo;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 import com.bizislife.core.controller.component.ApiResponse;
@@ -56,7 +58,8 @@ public class Account extends UIDPojo{
 	@OneToMany(mappedBy="account", cascade=CascadeType.ALL)
 	private Collection<EContact> eContacts;
 	
-	public Account() {
+	@PrePersist
+	protected void onCreate() {
 		this.uid = UUID.randomUUID().toString();
 	}
 

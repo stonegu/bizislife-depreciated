@@ -5,6 +5,6 @@ import java.util.Date;
 public interface ActionLog {
 	public Date getDateCreated();
 	public void setDateCreated(Date dateCreated);
-	public String getRoute();
-	public void setRoute(String route);
+	public Account getAccount();
+	public void setAccount(Account account);
 }

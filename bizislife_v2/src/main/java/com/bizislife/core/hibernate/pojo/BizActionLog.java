@@ -1,6 +1,7 @@
 package com.bizislife.core.hibernate.pojo;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,36 +26,34 @@ public class BizActionLog extends UIDPojo implements ActionLog{
 	@JoinColumn(name="accountid")
 	private Account account;
 	
-	@Column(name="route")
-	private String route;
-	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="datecreated")
 	private Date dateCreated;
+
+	@PrePersist
+	protected void onCreate() {
+		this.dateCreated = new Date();
+		this.uid = UUID.randomUUID().toString();
+	}
 
 	@Override
 	public Date getDateCreated() {
 		return this.dateCreated;
 	}
 	
-	@PrePersist
-	protected void onCreate() {
-		this.dateCreated = new Date();
-	}
-
 	@Override
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
 	@Override
-	public String getRoute() {
-		return this.route;
+	public Account getAccount() {
+		return account;
 	}
 
 	@Override
-	public void setRoute(String route) {
-		this.route = route;
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 }

@@ -1,7 +1,10 @@
 package com.bizislife.core.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -19,13 +22,18 @@ import com.bizislife.core.hibernate.pojo.Account;
 import com.bizislife.core.hibernate.pojo.EContact;
 import com.bizislife.core.hibernate.pojo.EContact.ContactType;
 import com.bizislife.core.hibernate.pojo.Role;
+import com.bizislife.core.hibernate.pojo.SignupLog;
 import com.bizislife.core.service.component.BizUser;
+import com.bizislife.util.WebUtil;
 
 @Service
 public class AccountServiceImpl implements AccountService{
 	
 	@Autowired
 	AccountJpaRepository accountJpaRepository;
+	
+	@Autowired
+	ActionLogService actionLogService;
 	
 	@Autowired
 	EContactJpaRepository eContactJpaRepository;
@@ -61,7 +69,7 @@ public class AccountServiceImpl implements AccountService{
 
 	@Override
 	@Transactional
-	public User signup(SignupForm signupForm) throws BizisLifeBaseException {
+	public User signup(SignupForm signupForm, HttpServletRequest req) throws BizisLifeBaseException {
 		User bizUser = null;
 		
 		if (signupForm!=null) {
@@ -101,8 +109,8 @@ public class AccountServiceImpl implements AccountService{
 		}
 		
 		if (bizUser!=null) {
-			// TODO: create action log!
-			
+			//create action log!
+			actionLogService.createSignupLog(bizUser.getUsername(), WebUtil.getClientIpAddress(req));
 			return bizUser;
 		}
 		else throw new BizisLifeBaseException(BizisLifeBaseException.SIGNUP_USER_CREATION_ERROR, 
