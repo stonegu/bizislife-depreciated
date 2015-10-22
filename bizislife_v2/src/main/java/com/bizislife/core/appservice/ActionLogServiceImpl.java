@@ -1,8 +1,6 @@
-package com.bizislife.core.service;
+package com.bizislife.core.appservice;
 
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +11,10 @@ import com.bizislife.core.hibernate.dao.ActionlogJpaRepository;
 import com.bizislife.core.hibernate.pojo.Account;
 import com.bizislife.core.hibernate.pojo.ActionLog;
 import com.bizislife.core.hibernate.pojo.BizActionLog;
+import com.bizislife.core.hibernate.pojo.EmailLog;
 import com.bizislife.core.hibernate.pojo.SigninLog;
 import com.bizislife.core.hibernate.pojo.SignupLog;
-import com.bizislife.util.WebUtil;
+import com.bizislife.core.listener.EmailMessageListener.EmailType;
 
 @Service
 public class ActionLogServiceImpl implements ActionLogService {
@@ -53,6 +52,10 @@ public class ActionLogServiceImpl implements ActionLogService {
 			if (theClass.equals(SignupLog.class)) {
 				actionLog.setAccount(accounts.get(0));
 				actionlogJpaRepository.save((SignupLog)actionLog);
+			} else 
+			if (theClass.equals(EmailLog.class)) {
+				actionLog.setAccount(accounts.get(0));
+				actionlogJpaRepository.save((EmailLog)actionLog);
 			}
 		}
 		return actionLog;
@@ -63,6 +66,18 @@ public class ActionLogServiceImpl implements ActionLogService {
 		SignupLog signupLog = new SignupLog();
 		signupLog.setIp(ip);
 		addActionLog(username, signupLog);
+		
+	}
+
+	@Override
+	public void createEmailLog(String username, EmailType emailType,
+			String sendto, String cc, String template) {
+		EmailLog emailLog = new EmailLog();
+		emailLog.setEmailtype(emailType.name());
+		emailLog.setSendto(sendto);
+		emailLog.setTemplate(template);
+		emailLog.setCcto(cc);
+		addActionLog(username, emailLog);
 		
 	}
 

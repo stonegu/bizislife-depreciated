@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bizislife.core.appservice.ActionLogService;
 import com.bizislife.core.controller.component.SignupForm;
 import com.bizislife.core.exception.BizisLifeBaseException;
 import com.bizislife.core.exception.NoUserCreate;
@@ -22,7 +23,6 @@ import com.bizislife.core.hibernate.pojo.Account;
 import com.bizislife.core.hibernate.pojo.EContact;
 import com.bizislife.core.hibernate.pojo.EContact.ContactType;
 import com.bizislife.core.hibernate.pojo.Role;
-import com.bizislife.core.hibernate.pojo.SignupLog;
 import com.bizislife.core.service.component.BizUser;
 import com.bizislife.util.WebUtil;
 

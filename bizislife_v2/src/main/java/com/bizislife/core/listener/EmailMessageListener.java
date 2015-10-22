@@ -26,6 +26,7 @@ import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
+import com.bizislife.core.appservice.ActionLogService;
 import com.bizislife.core.configuration.ApplicationConfiguration;
 
 public class EmailMessageListener implements MessageListener {
@@ -34,6 +35,9 @@ public class EmailMessageListener implements MessageListener {
     public static enum EmailType {
     	signup
     }
+    
+    @Autowired
+    ActionLogService actionLogService;
     
     @Autowired
     private ApplicationConfiguration applicationConfiguration;
@@ -104,6 +108,7 @@ public class EmailMessageListener implements MessageListener {
 			            System.out.println("Email sent!");
 			            
 			            // create a log
+			            actionLogService.createEmailLog(username, EmailType.signup, sendto, null, vmFileLocation);
 
 			        } catch (Exception ex) {
 			            System.out.println("The email was not sent.");

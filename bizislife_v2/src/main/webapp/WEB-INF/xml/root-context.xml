@@ -7,6 +7,7 @@
 
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<context:component-scan base-package="com.bizislife.core.configuration" />
+	<context:component-scan base-package="com.bizislife.core.appservice" />
 	
     <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
     	<property name="resourceLoaderPath" value="/WEB-INF/pages/template/velocity/" />

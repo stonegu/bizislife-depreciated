@@ -44,4 +44,12 @@ public class EmailLog extends BizActionLog{
 		this.template = template;
 	}
 
+	public String getCcto() {
+		return ccto;
+	}
+
+	public void setCcto(String ccto) {
+		this.ccto = ccto;
+	}
+
 }
